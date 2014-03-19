@@ -77,13 +77,14 @@ Sub openAcordaoFolder()
 
     Dim id As Identifier, folder As String, filename As String
       
-    folder = "K:\001 - JOD - GMJOD (2013)\005 - DIVERSOS\TRT"
-    
+   
     If Not ParseIdentifier(ActiveDocument.Name, id) Then
         MsgBox "O nome do arquivo não se parece com um processo."
         Exit Sub
     End If
        
+    folder = "K:\TRT\TRT" & Format(id.Numero, "00")
+        
     filename = folder & "\" & id.Formatado
     
     If Dir(filename, vbDirectory) <> "" Then
