@@ -21,7 +21,7 @@ Public Type Identifier
     Formatado As String
 End Type
 
-Public Function ParseIdentifier(text As String, ByRef id As Identifier) As Boolean
+Public Function ParseIdentifier(text As String, ByRef Id As Identifier) As Boolean
 
     Dim mask As New RegExp, result As MatchCollection
     Dim firstMatch As Match
@@ -36,30 +36,30 @@ Public Function ParseIdentifier(text As String, ByRef id As Identifier) As Boole
     
     If (result.Count > 0) Then
         Set firstMatch = result.Item(0)
-        id.Numero = firstMatch.SubMatches(0)
-        id.Digito = firstMatch.SubMatches(1)
-        id.Ano = firstMatch.SubMatches(2)
-        id.Justica = firstMatch.SubMatches(3)
-        id.Tribunal = firstMatch.SubMatches(4)
-        id.Vara = firstMatch.SubMatches(5)
-        id.Formatado = firstMatch.Value
+        Id.Numero = firstMatch.SubMatches(0)
+        Id.Digito = firstMatch.SubMatches(1)
+        Id.Ano = firstMatch.SubMatches(2)
+        Id.Justica = firstMatch.SubMatches(3)
+        Id.Tribunal = firstMatch.SubMatches(4)
+        Id.Vara = firstMatch.SubMatches(5)
+        Id.Formatado = firstMatch.Value
         ParseIdentifier = True
     End If
         
 End Function
 
-Public Function Navigate(url As String)
-    ShellExecute hWnd:=0, Operation:="open", filename:=url, WindowStyle:=5
+Public Function Navigate(URL As String)
+    ShellExecute hWnd:=0, Operation:="open", filename:=URL, WindowStyle:=5
 End Function
 
 Public Function Explore(folder As String)
     ShellExecute hWnd:=0, Operation:="explore", filename:=folder, WindowStyle:=5
 End Function
 
-Public Function getPK(id As Identifier)
+Public Function getPK(Id As Identifier)
     
     Dim processo As String
-    Dim url As String
+    Dim URL As String
     Dim headers As String
     Dim request As New WinHttpRequest
     
@@ -70,11 +70,11 @@ Public Function getPK(id As Identifier)
     mask.IgnoreCase = True
     mask.Pattern = "num_int=([0-9]*)&ano_int=([0-9]{4})"
      
-    url = "http://ext02.tst.jus.br/pls/ap01/ap_proc100.dados_processos?num_proc=" & id.Numero _
-    & "&dig_proc=" & id.Digito & "&ano_proc=" & id.Ano & "&num_orgao=" & id.Justica _
-    & "&TRT_proc=" & id.Tribunal & "&vara_proc=" & id.Vara
+    URL = "http://ext02.tst.jus.br/pls/ap01/ap_proc100.dados_processos?num_proc=" & Id.Numero _
+    & "&dig_proc=" & Id.Digito & "&ano_proc=" & Id.Ano & "&num_orgao=" & Id.Justica _
+    & "&TRT_proc=" & Id.Tribunal & "&vara_proc=" & Id.Vara
         
-    request.Open "GET", url
+    request.Open "GET", URL
     request.Option(WinHttpRequestOption_EnableRedirects) = False
     request.Send
         
@@ -94,10 +94,10 @@ Public Function getPK(id As Identifier)
     
 End Function
 
-Public Function openAll(id As Identifier)
+Public Function openAll(Id As Identifier)
 
-    Dim pk
-    pk = getPK(id)
+          Dim pk
+    pk = getPK(Id)
     
     Navigate ("https://aplicacao6.tst.jus.br/esij/VisualizarPecas.do?visualizarTodos=1&anoProcInt=" & pk(1) & "&numProcInt=" & pk(0))
 

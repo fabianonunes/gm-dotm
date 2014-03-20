@@ -55,18 +55,18 @@ Sub esij()
     
     System.Cursor = wdCursorWait
         
-    Dim id As Identifier, url As String
+    Dim Id As Identifier, URL As String
    
-    If Not ParseIdentifier(ActiveDocument.Name, id) Then
+    If Not ParseIdentifier(ActiveDocument.Name, Id) Then
         MsgBox "O nome do arquivo não se parece com um processo."
         Exit Sub
     End If
     
-    url = "https://aplicacao6.tst.jus.br/esij/ConsultarProcesso.do?consultarNumeracao=Consultar" _
-    & "&numProc=" & id.Numero & "&digito=" & id.Digito & "&anoProc=" & id.Ano & "&justica=" & id.Justica _
-    & "&numTribunal=" & id.Tribunal & " &numVara=" & id.Vara & "&codigoBarra="
+    URL = "https://aplicacao6.tst.jus.br/esij/ConsultarProcesso.do?consultarNumeracao=Consultar" _
+    & "&numProc=" & Id.Numero & "&digito=" & Id.Digito & "&anoProc=" & Id.Ano & "&justica=" & Id.Justica _
+    & "&numTribunal=" & Id.Tribunal & " &numVara=" & Id.Vara & "&codigoBarra="
     
-    Navigate url
+    Navigate URL
     
 End Sub
 
@@ -75,17 +75,17 @@ Sub openAcordaoFolder()
 
     System.Cursor = wdCursorWait
 
-    Dim id As Identifier, folder As String, filename As String
+    Dim Id As Identifier, folder As String, filename As String
       
    
-    If Not ParseIdentifier(ActiveDocument.Name, id) Then
+    If Not ParseIdentifier(ActiveDocument.Name, Id) Then
         MsgBox "O nome do arquivo não se parece com um processo."
         Exit Sub
     End If
        
-    folder = "K:\TRT\TRT" & Format(id.Numero, "00")
+    folder = "K:\TRT\TRT" & Format(Id.Tribunal, "00")
         
-    filename = folder & "\" & id.Formatado
+    filename = folder & "\" & Id.Formatado
     
     If Dir(filename, vbDirectory) <> "" Then
         Explore filename
@@ -95,37 +95,99 @@ Sub openAcordaoFolder()
     
 End Sub
 
-Sub openUltimoDespacho()
+Sub importUltimoDespacho()
     
     System.Cursor = wdCursorWait
 
-    Dim id As Identifier
-    
-    If Not ParseIdentifier(ActiveDocument.Name, id) Then
+    Dim Id As Identifier
+        
+    If Not ParseIdentifier(ActiveDocument.Name, Id) Then
         MsgBox "O nome do arquivo não se parece com um processo."
         Exit Sub
     End If
 
     Dim pk
-    pk = getPK(id)
+    pk = getPK(Id)
+    
+    
+    Dim request As New WinHttpRequest
+
+    Dim URL As String
+    Dim htmlText As String
+    Dim oDoc As New HTMLDocument
+    
+    URL = "http://aplicacao5.tst.jus.br/decisoes/consultas/ultimoDespachoTRT/" & pk(1) & "/" & pk(0)
+    
+    request.Open "GET", URL, True
+    request.Send
+    request.WaitForResponse
+    
+    htmlText = request.ResponseText
+    oDoc.body.innerHTML = htmlText
+    Selection.Style = ActiveDocument.Styles("Transcrição")
+    Selection.InsertAfter oDoc.body.innerText
+    
+    With Selection.Find
+        .ClearFormatting
+        .Replacement.ClearFormatting
+        .Forward = True
+        .Wrap = wdFindStop
+        .Format = False
+        .MatchCase = False
+        .MatchWholeWord = False
+        .MatchAllWordForms = False
+        .MatchSoundsLike = False
+        .MatchWildcards = True
+        
+        .text = " {1;}"
+        .Replacement.text = " "
+        .Execute Replace:=wdReplaceAll
+
+        .text = "^13{1;}"
+        .Replacement.text = "^13"
+        .Execute Replace:=wdReplaceAll
+    
+    End With
+    
+    Application.ScreenUpdating = True
+    'Selection.TypeText oDoc.body.innerText
+    
+End Sub
+
+Private Function FunctionReadyStateChange()
+    
+End Function
+
+Sub openUltimoDespacho()
+    
+    System.Cursor = wdCursorWait
+
+    Dim Id As Identifier
+    
+    If Not ParseIdentifier(ActiveDocument.Name, Id) Then
+        MsgBox "O nome do arquivo não se parece com um processo."
+        Exit Sub
+    End If
+
+    Dim pk
+    pk = getPK(Id)
     
     Navigate ("http://aplicacao5.tst.jus.br/decisoes/consultas/ultimoDespachoTRT/" & pk(1) & "/" & pk(0))
     
-    
-    
 End Sub
+
 
 Sub openAllPDFs()
 
     System.Cursor = wdCursorWait
 
-    Dim id As Identifier
+    Dim Id As Identifier
     
-    If Not ParseIdentifier(ActiveDocument.Name, id) Then
+    If Not ParseIdentifier(ActiveDocument.Name, Id) Then
         MsgBox "O nome do arquivo não se parece com um processo."
         Exit Sub
     End If
 
-    openAll id
+    openAll Id
     
 End Sub
