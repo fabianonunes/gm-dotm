@@ -11,6 +11,7 @@ Private Declare Function ShellExecute _
   Optional ByVal WindowStyle As Long = vbMinimizedFocus _
   ) As Long
   
+  
 Public Type Identifier
     Numero As String
     Digito As String
@@ -26,9 +27,11 @@ Public Function ParseIdentifier(text As String, ByRef Id As Identifier) As Boole
     Dim mask As New RegExp, result As MatchCollection
     Dim firstMatch As Match
     
+   On Error GoTo ParseIdentifier_Error
+
     mask.Global = True
     mask.IgnoreCase = True
-    mask.Pattern = "([1-9][0-9]{0,6})-([0-9]{1,2})[-.]([0-9]{4})[-.]([0-9])[-.]([0-9]{2})[-.]([0-9]{4})"
+    mask.Pattern = PROCESSO_PATTERN
       
     Set result = mask.Execute(text)
     
@@ -45,6 +48,13 @@ Public Function ParseIdentifier(text As String, ByRef Id As Identifier) As Boole
         Id.Formatado = firstMatch.Value
         ParseIdentifier = True
     End If
+
+   On Error GoTo 0
+   Exit Function
+
+ParseIdentifier_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure ParseIdentifier of Módulo Helpers"
         
 End Function
 
@@ -58,7 +68,6 @@ End Function
 
 Public Function getPK(Id As Identifier)
     
-    Dim processo As String
     Dim URL As String
     Dim headers As String
     Dim request As New WinHttpRequest
@@ -66,13 +75,17 @@ Public Function getPK(Id As Identifier)
     Dim retval(2) As String
         
     Dim mask As New RegExp, result As MatchCollection, firstMatch As Match
+   On Error GoTo getPK_Error
+
     mask.Global = True
     mask.IgnoreCase = True
     mask.Pattern = "num_int=([0-9]*)&ano_int=([0-9]{4})"
      
-    URL = "http://ext02.tst.jus.br/pls/ap01/ap_proc100.dados_processos?num_proc=" & Id.Numero _
-    & "&dig_proc=" & Id.Digito & "&ano_proc=" & Id.Ano & "&num_orgao=" & Id.Justica _
-    & "&TRT_proc=" & Id.Tribunal & "&vara_proc=" & Id.Vara
+    URL = _
+        "http://ext02.tst.jus.br/pls/ap01/ap_proc100.dados_processos?num_proc=" & _
+        Id.Numero & "&dig_proc=" & Id.Digito & "&ano_proc=" & Id.Ano & _
+        "&num_orgao=" & Id.Justica & "&TRT_proc=" & Id.Tribunal & "&vara_proc=" & _
+        Id.Vara
         
     request.Open "GET", URL
     request.Option(WinHttpRequestOption_EnableRedirects) = False
@@ -91,22 +104,93 @@ Public Function getPK(Id As Identifier)
             
     End If
        
+
+   On Error GoTo 0
+   Exit Function
+
+getPK_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & _
+        ") in procedure getPK of Módulo Helpers"
     
 End Function
 
 Public Function openAll(Id As Identifier)
 
-          Dim pk
+    Dim pk
+   
+   On Error GoTo openAll_Error
+
     pk = getPK(Id)
     
-    Navigate ("https://aplicacao6.tst.jus.br/esij/VisualizarPecas.do?visualizarTodos=1&anoProcInt=" & pk(1) & "&numProcInt=" & pk(0))
+    Navigate _
+        ("https://aplicacao6.tst.jus.br/esij/VisualizarPecas.do?visualizarTodos=1&anoProcInt=" _
+        & pk(1) & "&numProcInt=" & pk(0))
+
+   On Error GoTo 0
+    Exit Function
+
+openAll_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & _
+        ") in procedure openAll of Módulo Helpers"
 
 End Function
+
+
+Sub qq()
     
+    Dim clipboard As DataObject
+    Dim text As String
+    Dim mask As RegExp
+    Dim result As MatchCollection
+    Dim mt As Match
+    Dim undo As UndoRecord
+        
+   On Error GoTo qq_Error
 
-'    Dim clipboard As DataObject
-'    Set clipboard = New DataObject
-'    clipboard.SetText "A string value"
-'    clipboard.PutInClipboard
+    Set undo = Application.UndoRecord
 
+    Set clipboard = New DataObject
+    clipboard.GetFromClipboard
+    
+    If Not clipboard.GetFormat(1) Then
+        Exit Sub
+    End If
+       
+    text = clipboard.GetText(1)
 
+    Set mask = New RegExp
+    mask.Global = True
+    mask.IgnoreCase = True
+    mask.Pattern = PROCESSO_PATTERN
+      
+    Set result = mask.Execute(text)
+    
+    undo.StartCustomRecord ("qq")
+    
+    For Each mt In result
+        ActiveDocument.Range.InsertBefore mt.Value & vbCrLf
+    Next
+    
+    undo.EndCustomRecord
+
+   On Error GoTo 0
+   Exit Sub
+
+qq_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure qq of Módulo Helpers"
+    
+End Sub
+
+Sub WaitFor(NumOfSeconds As Long)
+    
+    Dim SngSec As Long
+    SngSec = Timer + NumOfSeconds
+
+    Do While Timer < SngSec
+        DoEvents
+    Loop
+
+End Sub

@@ -3,6 +3,8 @@ Option Explicit
 
 Sub JoinLines()
 
+   On Error GoTo JoinLines_Error
+
     Application.ScreenUpdating = False
     
     Dim selBkUp As Range
@@ -35,6 +37,13 @@ Sub JoinLines()
     End With
     
     Application.ScreenUpdating = True
+
+   On Error GoTo 0
+   Exit Sub
+
+JoinLines_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure JoinLines of Módulo Toolbar"
         
 End Sub
 
@@ -53,6 +62,8 @@ End Sub
 
 Sub esij()
     
+   On Error GoTo esij_Error
+
     System.Cursor = wdCursorWait
         
     Dim Id As Identifier, URL As String
@@ -67,11 +78,20 @@ Sub esij()
     & "&numTribunal=" & Id.Tribunal & " &numVara=" & Id.Vara & "&codigoBarra="
     
     Navigate URL
+
+   On Error GoTo 0
+   Exit Sub
+
+esij_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure esij of Módulo Toolbar"
     
 End Sub
 
 
 Sub openAcordaoFolder()
+
+   On Error GoTo openAcordaoFolder_Error
 
     System.Cursor = wdCursorWait
 
@@ -92,11 +112,20 @@ Sub openAcordaoFolder()
     Else
         MsgBox "Não há acórdão para o processo especificado"
     End If
+
+   On Error GoTo 0
+   Exit Sub
+
+openAcordaoFolder_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure openAcordaoFolder of Módulo Toolbar"
     
 End Sub
 
 Sub importUltimoDespacho()
     
+   On Error GoTo importUltimoDespacho_Error
+
     System.Cursor = wdCursorWait
 
     Dim Id As Identifier
@@ -150,16 +179,20 @@ Sub importUltimoDespacho()
     End With
     
     Application.ScreenUpdating = True
-    'Selection.TypeText oDoc.body.innerText
+
+   On Error GoTo 0
+   Exit Sub
+
+importUltimoDespacho_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure importUltimoDespacho of Módulo Toolbar"
     
 End Sub
 
-Private Function FunctionReadyStateChange()
-    
-End Function
-
 Sub openUltimoDespacho()
     
+   On Error GoTo openUltimoDespacho_Error
+
     System.Cursor = wdCursorWait
 
     Dim Id As Identifier
@@ -173,11 +206,20 @@ Sub openUltimoDespacho()
     pk = getPK(Id)
     
     Navigate ("http://aplicacao5.tst.jus.br/decisoes/consultas/ultimoDespachoTRT/" & pk(1) & "/" & pk(0))
+
+   On Error GoTo 0
+   Exit Sub
+
+openUltimoDespacho_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure openUltimoDespacho of Módulo Toolbar"
     
 End Sub
 
 
 Sub openAllPDFs()
+
+   On Error GoTo openAllPDFs_Error
 
     System.Cursor = wdCursorWait
 
@@ -189,5 +231,28 @@ Sub openAllPDFs()
     End If
 
     openAll Id
+
+   On Error GoTo 0
+   Exit Sub
+
+openAllPDFs_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure openAllPDFs of Módulo Toolbar"
     
 End Sub
+
+Public Sub loadStyles()
+   
+   On Error GoTo loadStyles_Error
+
+    ActiveDocument.ApplyQuickStyleSet2 "GMJD"
+
+   On Error GoTo 0
+   Exit Sub
+
+loadStyles_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure loadStyles of Módulo Toolbar"
+
+End Sub
+
