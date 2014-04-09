@@ -14,10 +14,6 @@ Attribute oApp.VB_VarHelpID = -1
 
 Private Sub oApp_DocumentBeforeSave(ByVal Doc As Document, SaveAsUI As Boolean, Cancel As Boolean)
 
-End Sub
-
-Private Sub oApp_DocumentBeforeClose(ByVal Doc As Document, Cancel As Boolean)
-    
     Dim oRng As Word.Range, i As Integer
    
    On Error GoTo oApp_DocumentBeforeSave_Error
@@ -39,7 +35,9 @@ Private Sub oApp_DocumentBeforeClose(ByVal Doc As Document, Cancel As Boolean)
                     .Item(i).Delete
                 Next i
             End With
-    
+            
+            Doc.Save
+            
         Case vbNo
         
             Cancel = True
@@ -56,18 +54,7 @@ oApp_DocumentBeforeSave_Error:
 End Sub
 
 Private Sub oApp_DocumentOpen(ByVal Doc As Document)
-   On Error GoTo oApp_DocumentOpen_Error
-
-    Doc.ApplyQuickStyleSet2 "GMJD"
-
-   On Error GoTo 0
-   Exit Sub
-
-oApp_DocumentOpen_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure oApp_DocumentOpen of Módulo de classe ThisApplication"
 End Sub
 
 Private Sub oApp_Quit()
-    'MsgBox "quit"
 End Sub

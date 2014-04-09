@@ -22,7 +22,7 @@ Public Type Identifier
     Formatado As String
 End Type
 
-Public Function ParseIdentifier(text As String, ByRef Id As Identifier) As Boolean
+Public Function ParseIdentifier(text As String) As Identifier
 
     Dim mask As New RegExp, result As MatchCollection
     Dim firstMatch As Match
@@ -35,18 +35,17 @@ Public Function ParseIdentifier(text As String, ByRef Id As Identifier) As Boole
       
     Set result = mask.Execute(text)
     
-    ParseIdentifier = False
-    
     If (result.Count > 0) Then
         Set firstMatch = result.Item(0)
-        Id.Numero = firstMatch.SubMatches(0)
-        Id.Digito = firstMatch.SubMatches(1)
-        Id.Ano = firstMatch.SubMatches(2)
-        Id.Justica = firstMatch.SubMatches(3)
-        Id.Tribunal = firstMatch.SubMatches(4)
-        Id.Vara = firstMatch.SubMatches(5)
-        Id.Formatado = firstMatch.Value
-        ParseIdentifier = True
+        ParseIdentifier.Numero = firstMatch.SubMatches(0)
+        ParseIdentifier.Digito = firstMatch.SubMatches(1)
+        ParseIdentifier.Ano = firstMatch.SubMatches(2)
+        ParseIdentifier.Justica = firstMatch.SubMatches(3)
+        ParseIdentifier.Tribunal = firstMatch.SubMatches(4)
+        ParseIdentifier.Vara = firstMatch.SubMatches(5)
+        ParseIdentifier.Formatado = firstMatch.Value
+    Else
+        Err.Raise 600, "ParseIdentifier"
     End If
 
    On Error GoTo 0
@@ -54,7 +53,12 @@ Public Function ParseIdentifier(text As String, ByRef Id As Identifier) As Boole
 
 ParseIdentifier_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure ParseIdentifier of Módulo Helpers"
+    If Err.Number = 600 Then
+        Err.Raise 600, "ParseIdentifier"
+        Exit Function
+    End If
+
+    Catch Err
         
 End Function
 
@@ -192,5 +196,30 @@ Sub WaitFor(NumOfSeconds As Long)
     Do While Timer < SngSec
         DoEvents
     Loop
+
+End Sub
+
+Public Function Catch(error As ErrObject)
+    
+    If (error.Number = 600) Then
+        MsgBox "O nome do arquivo não se parece com um processo"
+    Else
+        MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure ..."
+    End If
+
+End Function
+
+Public Sub loadStyles()
+   
+   On Error GoTo loadStyles_Error
+
+    ActiveDocument.ApplyQuickStyleSet2 "GMJD"
+
+   On Error GoTo 0
+   Exit Sub
+
+loadStyles_Error:
+
+    Catch Err
 
 End Sub

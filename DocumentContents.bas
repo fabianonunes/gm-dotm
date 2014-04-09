@@ -6,12 +6,15 @@ Sub italicsLatin()
     Dim stream As TextStream
     Dim text As String
     Dim undo As UndoRecord
+    Dim oRng As Word.Range
+    Dim counter As Integer
     
    On Error GoTo italicsLatin_Error
 
     Set fs = New FileSystemObject
     Set stream = fs.OpenTextFile(LATIN_FILEPATH)
     Set undo = Application.UndoRecord
+    counter = 0
     
     undo.EndCustomRecord
     undo.StartCustomRecord ("Destacar palavras em latim")
@@ -20,19 +23,16 @@ Sub italicsLatin()
         
         text = stream.ReadLine
         
-        Dim oRng As Word.Range
         Set oRng = ActiveDocument.Range
         With oRng.Find
             .ClearFormatting
             .MatchWholeWord = True
             .text = text
             While .Execute
+                counter = counter + 1
                 With oRng
-                Str
-                    If .Style Like "Transcrição*" Then
-                       .text = text
-                       .Font.Italic = True
-                    End If
+                    .text = text
+                    .Font.Italic = True
                 End With
             Wend
         End With
@@ -44,6 +44,14 @@ Sub italicsLatin()
     stream.Close
     
     Application.ScreenUpdating = True
+    
+    If counter = 0 Then
+        MsgBox "Nenhuma expressão foi encontrada."
+    ElseIf counter = 1 Then
+        MsgBox "Uma expressão foi destacada."
+    ElseIf counter > 1 Then
+        MsgBox counter & " expressões foram destacadas."
+    End If
 
    On Error GoTo 0
    Exit Sub
@@ -69,7 +77,7 @@ Sub comment()
     Set fs = New FileSystemObject
     Set stream = fs.OpenTextFile(DIC_FILEPATH)
     Set undo = Application.UndoRecord
-
+    
     SendKeys "%v%"
     
     removeComments
@@ -84,6 +92,7 @@ Sub comment()
         size = UBound(splitted) + 1
         
         Set oRng = ActiveDocument.Range
+        
         With oRng.Find
             .ClearFormatting
             .MatchWholeWord = True
@@ -120,6 +129,15 @@ NextIteration:
     Loop
     
     undo.EndCustomRecord
+    
+    Set oRng = ActiveDocument.Range
+    
+    If oRng.Comments.Count > 0 Then
+        oRng.Comments.Item(1).Reference.Select
+    Else
+        MsgBox "Nenhuma expressão foi encontrada."
+    End If
+    
     stream.Close
     Application.ScreenUpdating = True
 

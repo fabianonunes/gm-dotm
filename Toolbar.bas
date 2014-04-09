@@ -21,13 +21,13 @@ Sub JoinLines()
         .MatchAllWordForms = False
         .MatchSoundsLike = False
         .MatchWildcards = True
+                
+        .text = " {1;}^13"
+        .Replacement.text = "^p"
+        .Execute Replace:=wdReplaceAll
         
         .text = " {1;}"
         .Replacement.text = " "
-        .Execute Replace:=wdReplaceAll
-
-        .text = " {1;}^13"
-        .Replacement.text = ""
         .Execute Replace:=wdReplaceAll
 
         .text = "([!.])^13"
@@ -43,7 +43,11 @@ Sub JoinLines()
 
 JoinLines_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure JoinLines of Módulo Toolbar"
+    If Err.Number = 4608 Then
+        MsgBox "Não há texto selecionado"
+    Else
+        Catch Err
+    End If
         
 End Sub
 
@@ -66,12 +70,10 @@ Sub esij()
 
     System.Cursor = wdCursorWait
         
-    Dim Id As Identifier, URL As String
+    Dim Id As Identifier
+    Dim URL As String
    
-    If Not ParseIdentifier(ActiveDocument.Name, Id) Then
-        MsgBox "O nome do arquivo não se parece com um processo."
-        Exit Sub
-    End If
+    Id = ParseIdentifier(ActiveDocument.Name)
     
     URL = "https://aplicacao6.tst.jus.br/esij/ConsultarProcesso.do?consultarNumeracao=Consultar" _
     & "&numProc=" & Id.Numero & "&digito=" & Id.Digito & "&anoProc=" & Id.Ano & "&justica=" & Id.Justica _
@@ -84,8 +86,8 @@ Sub esij()
 
 esij_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure esij of Módulo Toolbar"
-    
+    Catch Err
+
 End Sub
 
 
@@ -96,12 +98,8 @@ Sub openAcordaoFolder()
     System.Cursor = wdCursorWait
 
     Dim Id As Identifier, folder As String, filename As String
-      
    
-    If Not ParseIdentifier(ActiveDocument.Name, Id) Then
-        MsgBox "O nome do arquivo não se parece com um processo."
-        Exit Sub
-    End If
+    Id = ParseIdentifier(ActiveDocument.Name)
        
     folder = "K:\TRT\TRT" & Format(Id.Tribunal, "00")
         
@@ -118,7 +116,7 @@ Sub openAcordaoFolder()
 
 openAcordaoFolder_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure openAcordaoFolder of Módulo Toolbar"
+    Catch Err
     
 End Sub
 
@@ -126,24 +124,22 @@ Sub importUltimoDespacho()
     
    On Error GoTo importUltimoDespacho_Error
 
-    System.Cursor = wdCursorWait
-
     Dim Id As Identifier
+    Dim undo As UndoRecord
         
-    If Not ParseIdentifier(ActiveDocument.Name, Id) Then
-        MsgBox "O nome do arquivo não se parece com um processo."
-        Exit Sub
-    End If
+    Id = ParseIdentifier(ActiveDocument.Name)
 
     Dim pk
     pk = getPK(Id)
     
+    Dim request As WinHttp.WinHttpRequest
+    Dim oDoc As MSHTML.HTMLDocument
     
-    Dim request As New WinHttpRequest
-
     Dim URL As String
     Dim htmlText As String
-    Dim oDoc As New HTMLDocument
+    
+    Set request = New WinHttp.WinHttpRequest
+    Set oDoc = New MSHTML.HTMLDocument
     
     URL = "http://aplicacao5.tst.jus.br/decisoes/consultas/ultimoDespachoTRT/" & pk(1) & "/" & pk(0)
     
@@ -153,6 +149,10 @@ Sub importUltimoDespacho()
     
     htmlText = request.ResponseText
     oDoc.body.innerHTML = htmlText
+    
+    Set undo = Application.UndoRecord
+    undo.StartCustomRecord ("Importar Despacho")
+    
     Selection.Style = ActiveDocument.Styles("Transcrição")
     Selection.InsertAfter oDoc.body.innerText
     
@@ -167,27 +167,29 @@ Sub importUltimoDespacho()
         .MatchAllWordForms = False
         .MatchSoundsLike = False
         .MatchWildcards = True
-        
-        .text = " {1;}"
-        .Replacement.text = " "
+
+        .text = "^13 {1;}^13"
+        .Replacement.text = "^p"
         .Execute Replace:=wdReplaceAll
 
         .text = "^13{1;}"
-        .Replacement.text = "^13"
+        .Replacement.text = "^p"
         .Execute Replace:=wdReplaceAll
-    
+
     End With
     
-    Application.ScreenUpdating = True
+    undo.EndCustomRecord
+
 
    On Error GoTo 0
    Exit Sub
 
 importUltimoDespacho_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure importUltimoDespacho of Módulo Toolbar"
+    Catch Err
     
 End Sub
+
 
 Sub openUltimoDespacho()
     
@@ -196,11 +198,7 @@ Sub openUltimoDespacho()
     System.Cursor = wdCursorWait
 
     Dim Id As Identifier
-    
-    If Not ParseIdentifier(ActiveDocument.Name, Id) Then
-        MsgBox "O nome do arquivo não se parece com um processo."
-        Exit Sub
-    End If
+    Id = ParseIdentifier(ActiveDocument.Name)
 
     Dim pk
     pk = getPK(Id)
@@ -212,7 +210,7 @@ Sub openUltimoDespacho()
 
 openUltimoDespacho_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure openUltimoDespacho of Módulo Toolbar"
+    Catch Err
     
 End Sub
 
@@ -225,10 +223,7 @@ Sub openAllPDFs()
 
     Dim Id As Identifier
     
-    If Not ParseIdentifier(ActiveDocument.Name, Id) Then
-        MsgBox "O nome do arquivo não se parece com um processo."
-        Exit Sub
-    End If
+    Id = ParseIdentifier(ActiveDocument.Name)
 
     openAll Id
 
@@ -237,22 +232,7 @@ Sub openAllPDFs()
 
 openAllPDFs_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure openAllPDFs of Módulo Toolbar"
+    Catch Err
     
-End Sub
-
-Public Sub loadStyles()
-   
-   On Error GoTo loadStyles_Error
-
-    ActiveDocument.ApplyQuickStyleSet2 "GMJD"
-
-   On Error GoTo 0
-   Exit Sub
-
-loadStyles_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure loadStyles of Módulo Toolbar"
-
 End Sub
 
