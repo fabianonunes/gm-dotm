@@ -9,7 +9,9 @@ Sub italicsLatin()
     Dim oRng As Word.Range
     Dim counter As Integer
     
-   On Error GoTo italicsLatin_Error
+   On Error GoTo try
+   
+    Application.ScreenUpdating = False
 
     Set fs = New FileSystemObject
     Set stream = fs.OpenTextFile(LATIN_FILEPATH)
@@ -27,6 +29,7 @@ Sub italicsLatin()
         With oRng.Find
             .ClearFormatting
             .MatchWholeWord = True
+            .MatchCase = False
             .text = text
             While .Execute
                 counter = counter + 1
@@ -43,8 +46,6 @@ Sub italicsLatin()
  
     stream.Close
     
-    Application.ScreenUpdating = True
-    
     If counter = 0 Then
         MsgBox "Nenhuma expressão foi encontrada."
     ElseIf counter = 1 Then
@@ -53,30 +54,37 @@ Sub italicsLatin()
         MsgBox counter & " expressões foram destacadas."
     End If
 
+finally:
    On Error GoTo 0
-   Exit Sub
+    Application.ScreenUpdating = True
+    Exit Sub
 
-italicsLatin_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure italicsLatin of Módulo DocumentContents"
+try:
+    Catch Err
+    GoTo finally
 
 End Sub
 Sub comment()
          
-    Dim excel_app As Excel.Application
-    Dim workbook As Excel.workbook
-    Dim sheet As Excel.Worksheet
-    Dim table As Excel.ListObject
-    Dim table_rng As Excel.Range
-    Dim doc_rng As Range
-    Dim undo As UndoRecord
-    Dim size As Integer
-
-   On Error GoTo comment_Error
-   
-    AutoExec.AutoExec
-
+    Dim excel_app   As Excel.Application
+    Dim workbook    As Excel.workbook
+    Dim sheet       As Excel.Worksheet
+    Dim table       As Excel.ListObject
+    Dim table_rng   As Excel.Range
+    Dim doc_rng     As Range
+    Dim undo        As UndoRecord
+    Dim size        As Integer
+    
+   On Error GoTo try
+    
     SendKeys "%v%"
+    DoEvents ' confirma a ativação do ribbon
+   
+    System.Cursor = wdCursorWait
+    Application.ScreenUpdating = False
+    
+    AutoExec.AutoExec ' liga os eventos do oApp, caso necessário
+
     removeComments
 
     Set excel_app = New Excel.Application
@@ -94,36 +102,27 @@ Sub comment()
         With doc_rng.Find
             .ClearFormatting
             .MatchWholeWord = True
+            .MatchCase = False
             .text = table_rng.Cells(1).Value
 
             While .Execute
 
                 With doc_rng
 
-                    If .Style Like "Transcrição*" Then
-
-                        GoTo NextIteration
+                    If (table_rng.Cells(3) = "" Or .Style = table_rng.Cells(3)) _
+                        And (Not .Style Like "Transcrição*") Then
+                        
+                        .Comments.Add Range:=doc_rng, text:=table_rng.Cells(2).Value
+                        
                     End If
-
-                    If table_rng.Cells(3) <> "" And .Style <> table_rng.Cells(3) Then
-                       GoTo NextIteration
-                    End If
-
-                    .Comments.Add Range:=doc_rng, text:=table_rng.Cells(2).Value
-
 
                 End With
-
-NextIteration:
 
             Wend
 
         End With
 
     Next
-
-    workbook.Close
-    Set workbook = Nothing
 
     undo.EndCustomRecord
     
@@ -135,112 +134,30 @@ NextIteration:
         MsgBox "Nenhuma expressão foi encontrada."
     End If
     
-    Application.ScreenUpdating = True
 
+finally:
    On Error GoTo 0
-   Exit Sub
-
-comment_Error:
-
+    
+    Application.ScreenUpdating = True
+    
     workbook.Close
+    Set workbook = Nothing
+
+    Exit Sub
+
+try:
+
     Catch Err
+    GoTo finally
 
 End Sub
 
-Sub comment_filebased()
-         
-    Dim fs As FileSystemObject
-    Dim stream As TextStream
-    Dim text As String
-    Dim undo As UndoRecord
-    Dim splitted() As String
-    Dim oRng As Word.Range
-    Dim size As Integer
-
-   On Error GoTo comment_Error
-
-    Set fs = New FileSystemObject
-    Set stream = fs.OpenTextFile(DIC_FILEPATH)
-    Set undo = Application.UndoRecord
-    
-    SendKeys "%v%"
-    
-    removeComments
-    
-    undo.EndCustomRecord
-    undo.StartCustomRecord "Destacar Expressões"
-    
-    Do While Not stream.AtEndOfStream
-        
-        text = stream.ReadLine
-        splitted = Split(text, "|")
-        size = UBound(splitted) + 1
-        
-        Set oRng = ActiveDocument.Range
-        
-        With oRng.Find
-            .ClearFormatting
-            .MatchWholeWord = True
-            .text = splitted(0)
-            
-            While .Execute
-            
-                With oRng
-                
-                    If .Style Like "Transcrição*" Then
-                        GoTo NextIteration
-                    End If
-                
-                    If size > 1 Then
-                        
-                        If (size = 3) Then
-                            If .Style <> splitted(2) Then
-                               GoTo NextIteration
-                            End If
-                        End If
-                        
-                        .Comments.Add Range:=oRng, text:=splitted(1)
-                        
-                    End If
-                    
-                End With
-                
-NextIteration:
-
-            Wend
-            
-        End With
-
-    Loop
-    
-    undo.EndCustomRecord
-    
-    Set oRng = ActiveDocument.Range
-    
-    If oRng.Comments.Count > 0 Then
-        oRng.Comments.Item(1).Reference.Select
-    Else
-        MsgBox "Nenhuma expressão foi encontrada."
-    End If
-    
-    stream.Close
-    Application.ScreenUpdating = True
-
-   On Error GoTo 0
-   Exit Sub
-
-comment_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure comment of Módulo DocumentContents"
-
-End Sub
-
-Private Sub removeComments()
+Private Function removeComments()
    
    Dim oRng As Word.Range, i As Integer
    
-  On Error GoTo removeComments_Error
-
+  On Error GoTo try
+  
     Set oRng = ActiveDocument.Range
 
     With oRng.Comments
@@ -250,11 +167,10 @@ Private Sub removeComments()
     End With
 
    On Error GoTo 0
-   Exit Sub
+   Exit Function
 
-removeComments_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure removeComments of Módulo DocumentContents"
-
-End Sub
+try:
+    Catch Err
+    
+End Function
 
