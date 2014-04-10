@@ -200,6 +200,8 @@ Sub WaitFor(NumOfSeconds As Long)
 End Sub
 
 Public Function Catch(error As ErrObject)
+
+    Application.ScreenUpdating = True
     
     If (error.Number = 600) Then
         MsgBox "O nome do arquivo não se parece com um processo"
