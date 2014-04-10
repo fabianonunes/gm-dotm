@@ -7,9 +7,14 @@ Public Sub AutoExec()
     
     On Error GoTo ErrorHandler:
     
-    ' habilitar eventos do Word.Application
-    ' http://word.mvps.org/faqs/macrosvba/appclassevents.htm
-    Set oAppClass.oApp = Word.Application
+    If oAppClass.oApp Is Nothing Then
+    
+        ' habilitar eventos do Word.Application
+        ' http://word.mvps.org/faqs/macrosvba/appclassevents.htm
+        Set oAppClass.oApp = Word.Application
+    
+    End If
+    
     
     Exit Sub
 
