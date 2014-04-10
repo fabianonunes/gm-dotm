@@ -61,8 +61,93 @@ italicsLatin_Error:
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure italicsLatin of Módulo DocumentContents"
 
 End Sub
-
 Sub comment()
+         
+    Dim excel_app As Excel.Application
+    Dim workbook As Excel.workbook
+    Dim sheet As Excel.Worksheet
+    Dim table As Excel.ListObject
+    Dim table_rng As Excel.Range
+    Dim doc_rng As Range
+    Dim undo As UndoRecord
+    Dim size As Integer
+
+   On Error GoTo comment_Error
+   
+    AutoExec.AutoExec
+
+    SendKeys "%v%"
+    removeComments
+
+    Set excel_app = New Excel.Application
+    Set workbook = excel_app.Workbooks.Open(filename:=DICX_FILEPATH, ReadOnly:=True)
+    Set sheet = workbook.Sheets("Dicionario")
+    Set table = sheet.ListObjects("TabelaDicionario")
+    Set undo = Application.UndoRecord
+    
+    undo.StartCustomRecord "Destacar Expressões"
+
+    For Each table_rng In table.DataBodyRange.rows
+
+        Set doc_rng = ActiveDocument.Range
+
+        With doc_rng.Find
+            .ClearFormatting
+            .MatchWholeWord = True
+            .text = table_rng.Cells(1).Value
+
+            While .Execute
+
+                With doc_rng
+
+                    If .Style Like "Transcrição*" Then
+
+                        GoTo NextIteration
+                    End If
+
+                    If table_rng.Cells(3) <> "" And .Style <> table_rng.Cells(3) Then
+                       GoTo NextIteration
+                    End If
+
+                    .Comments.Add Range:=doc_rng, text:=table_rng.Cells(2).Value
+
+
+                End With
+
+NextIteration:
+
+            Wend
+
+        End With
+
+    Next
+
+    workbook.Close
+    Set workbook = Nothing
+
+    undo.EndCustomRecord
+    
+    Set doc_rng = ActiveDocument.Range
+    
+    If doc_rng.Comments.Count > 0 Then
+        doc_rng.Comments.Item(1).Reference.Select
+    Else
+        MsgBox "Nenhuma expressão foi encontrada."
+    End If
+    
+    Application.ScreenUpdating = True
+
+   On Error GoTo 0
+   Exit Sub
+
+comment_Error:
+
+    workbook.Close
+    Catch Err
+
+End Sub
+
+Sub comment_filebased()
          
     Dim fs As FileSystemObject
     Dim stream As TextStream
