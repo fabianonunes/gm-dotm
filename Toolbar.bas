@@ -3,8 +3,9 @@ Option Explicit
 
 Sub JoinLines()
 
-   On Error GoTo JoinLines_Error
+   On Error GoTo try
 
+    System.Cursor = wdCursorWait
     Application.ScreenUpdating = False
     
     Dim selBkUp As Range
@@ -36,18 +37,19 @@ Sub JoinLines()
        
     End With
     
-    Application.ScreenUpdating = True
-
+finally:
    On Error GoTo 0
-   Exit Sub
+    Application.ScreenUpdating = True
+    Exit Sub
 
-JoinLines_Error:
-
+try:
     If Err.Number = 4608 Then
         MsgBox "Não há texto selecionado"
     Else
         Catch Err
     End If
+    
+    GoTo finally
         
 End Sub
 
@@ -66,9 +68,10 @@ End Sub
 
 Sub esij()
     
-   On Error GoTo esij_Error
+On Error GoTo try
 
     System.Cursor = wdCursorWait
+    Application.ScreenUpdating = False
         
     Dim Id As Identifier
     Dim URL As String
@@ -81,21 +84,24 @@ Sub esij()
     
     Navigate URL
 
+finally:
    On Error GoTo 0
-   Exit Sub
+    Application.ScreenUpdating = True
+    Exit Sub
 
-esij_Error:
-
+try:
     Catch Err
-
+    GoTo finally
+        
 End Sub
 
 
 Sub openAcordaoFolder()
 
-   On Error GoTo openAcordaoFolder_Error
+On Error GoTo try
 
     System.Cursor = wdCursorWait
+    Application.ScreenUpdating = False
 
     Dim Id As Identifier, folder As String, filename As String
    
@@ -111,19 +117,24 @@ Sub openAcordaoFolder()
         MsgBox "Não há acórdão para o processo especificado"
     End If
 
+finally:
    On Error GoTo 0
-   Exit Sub
+    Application.ScreenUpdating = True
+    Exit Sub
 
-openAcordaoFolder_Error:
-
+try:
     Catch Err
+    GoTo finally
     
 End Sub
 
 Sub importUltimoDespacho()
     
-   On Error GoTo importUltimoDespacho_Error
+On Error GoTo try
 
+    System.Cursor = wdCursorWait
+    Application.ScreenUpdating = False
+    
     Dim Id As Identifier
     Dim undo As UndoRecord
         
@@ -178,24 +189,25 @@ Sub importUltimoDespacho()
 
     End With
     
-    undo.EndCustomRecord
-
-
+finally:
    On Error GoTo 0
-   Exit Sub
+    Application.ScreenUpdating = True
+    undo.EndCustomRecord
+    Exit Sub
 
-importUltimoDespacho_Error:
-
+try:
     Catch Err
+    GoTo finally
     
 End Sub
 
 
 Sub openUltimoDespacho()
     
-   On Error GoTo openUltimoDespacho_Error
+On Error GoTo try
 
     System.Cursor = wdCursorWait
+    Application.ScreenUpdating = False
 
     Dim Id As Identifier
     Id = ParseIdentifier(ActiveDocument.Name)
@@ -205,34 +217,39 @@ Sub openUltimoDespacho()
     
     Navigate ("http://aplicacao5.tst.jus.br/decisoes/consultas/ultimoDespachoTRT/" & pk(1) & "/" & pk(0))
 
+finally:
    On Error GoTo 0
-   Exit Sub
+    Application.ScreenUpdating = True
+    Exit Sub
 
-openUltimoDespacho_Error:
-
+try:
     Catch Err
+    GoTo finally
     
 End Sub
 
 
 Sub openAllPDFs()
 
-   On Error GoTo openAllPDFs_Error
+On Error GoTo try
 
     System.Cursor = wdCursorWait
-
+    Application.ScreenUpdating = False
+    
     Dim Id As Identifier
     
     Id = ParseIdentifier(ActiveDocument.Name)
 
     openAll Id
 
+finally:
    On Error GoTo 0
-   Exit Sub
+    Application.ScreenUpdating = True
+    Exit Sub
 
-openAllPDFs_Error:
-
+try:
     Catch Err
+    GoTo finally
     
 End Sub
 
