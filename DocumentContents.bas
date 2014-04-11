@@ -2,15 +2,16 @@ Attribute VB_Name = "DocumentContents"
 
 Sub italicsLatin()
 
-    Dim fs As FileSystemObject
-    Dim stream As TextStream
-    Dim text As String
-    Dim undo As UndoRecord
-    Dim oRng As Word.Range
+    Dim fs      As FileSystemObject
+    Dim stream  As TextStream
+    Dim text    As String
+    Dim undo    As UndoRecord
+    Dim oRng    As Word.Range
     Dim counter As Integer
     
-   On Error GoTo try
+On Error GoTo try
    
+    System.Cursor = wdCursorWait
     Application.ScreenUpdating = False
 
     Set fs = New FileSystemObject
@@ -18,7 +19,6 @@ Sub italicsLatin()
     Set undo = Application.UndoRecord
     counter = 0
     
-    undo.EndCustomRecord
     undo.StartCustomRecord ("Destacar palavras em latim")
     
     Do While Not stream.AtEndOfStream
@@ -42,9 +42,6 @@ Sub italicsLatin()
     
     Loop
     
-    undo.EndCustomRecord
- 
-    stream.Close
     
     If counter = 0 Then
         MsgBox "Nenhuma expressão foi encontrada."
@@ -55,15 +52,19 @@ Sub italicsLatin()
     End If
 
 finally:
-   On Error GoTo 0
+    On Error Resume Next
     Application.ScreenUpdating = True
+    undo.EndCustomRecord
+    stream.Close
     Exit Sub
 
 try:
     Catch Err
-    GoTo finally
+    Resume finally
+    Resume
 
 End Sub
+
 Sub comment()
          
     Dim excel_app   As Excel.Application
@@ -73,9 +74,8 @@ Sub comment()
     Dim table_rng   As Excel.Range
     Dim doc_rng     As Range
     Dim undo        As UndoRecord
-    Dim size        As Integer
     
-   On Error GoTo try
+On Error GoTo try
     
     SendKeys "%v%"
     DoEvents ' confirma a ativação do ribbon
@@ -124,8 +124,6 @@ Sub comment()
 
     Next
 
-    undo.EndCustomRecord
-    
     Set doc_rng = ActiveDocument.Range
     
     If doc_rng.Comments.Count > 0 Then
@@ -136,10 +134,10 @@ Sub comment()
     
 
 finally:
-   On Error GoTo 0
+    On Error Resume Next
     
     Application.ScreenUpdating = True
-    
+    undo.EndCustomRecord
     workbook.Close
     Set workbook = Nothing
 
@@ -148,29 +146,10 @@ finally:
 try:
 
     Catch Err
-    GoTo finally
+    Resume finally
+    Resume
 
 End Sub
 
-Private Function removeComments()
-   
-   Dim oRng As Word.Range, i As Integer
-   
-  On Error GoTo try
-  
-    Set oRng = ActiveDocument.Range
 
-    With oRng.Comments
-      For i = .Count To 1 Step -1
-           .Item(i).Delete
-      Next i
-    End With
-
-   On Error GoTo 0
-   Exit Function
-
-try:
-    Catch Err
-    
-End Function
 

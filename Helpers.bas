@@ -27,8 +27,6 @@ Public Function ParseIdentifier(text As String) As Identifier
     Dim mask As New RegExp, result As MatchCollection
     Dim firstMatch As Match
     
-   On Error GoTo ParseIdentifier_Error
-
     mask.Global = True
     mask.IgnoreCase = True
     mask.Pattern = PROCESSO_PATTERN
@@ -48,18 +46,6 @@ Public Function ParseIdentifier(text As String) As Identifier
         Err.Raise 600, "ParseIdentifier"
     End If
 
-   On Error GoTo 0
-   Exit Function
-
-ParseIdentifier_Error:
-
-    If Err.Number = 600 Then
-        Err.Raise 600, "ParseIdentifier"
-        Exit Function
-    End If
-
-    Catch Err
-        
 End Function
 
 Public Function Navigate(URL As String)
@@ -72,14 +58,14 @@ End Function
 
 Public Function getPK(Id As Identifier)
     
-    Dim URL As String
-    Dim headers As String
-    Dim request As New WinHttpRequest
+    Dim URL        As String
+    Dim headers    As String
+    Dim retval(2)  As String
+    Dim result     As MatchCollection
+    Dim firstMatch As Match
     
-    Dim retval(2) As String
-        
-    Dim mask As New RegExp, result As MatchCollection, firstMatch As Match
-   On Error GoTo getPK_Error
+    Dim mask       As New RegExp
+    Dim request    As New WinHttpRequest
 
     mask.Global = True
     mask.IgnoreCase = True
@@ -108,87 +94,20 @@ Public Function getPK(Id As Identifier)
             
     End If
        
-
-   On Error GoTo 0
-   Exit Function
-
-getPK_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & _
-        ") in procedure getPK of Módulo Helpers"
-    
 End Function
 
 Public Function openAll(Id As Identifier)
 
     Dim pk
-   
-   On Error GoTo openAll_Error
-
     pk = getPK(Id)
     
     Navigate _
         ("https://aplicacao6.tst.jus.br/esij/VisualizarPecas.do?visualizarTodos=1&anoProcInt=" _
         & pk(1) & "&numProcInt=" & pk(0))
 
-   On Error GoTo 0
-    Exit Function
-
-openAll_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & _
-        ") in procedure openAll of Módulo Helpers"
-
 End Function
 
-
-Sub qq()
-    
-    Dim clipboard As DataObject
-    Dim text As String
-    Dim mask As RegExp
-    Dim result As MatchCollection
-    Dim mt As Match
-    Dim undo As UndoRecord
-        
-   On Error GoTo qq_Error
-
-    Set undo = Application.UndoRecord
-
-    Set clipboard = New DataObject
-    clipboard.GetFromClipboard
-    
-    If Not clipboard.GetFormat(1) Then
-        Exit Sub
-    End If
-       
-    text = clipboard.GetText(1)
-
-    Set mask = New RegExp
-    mask.Global = True
-    mask.IgnoreCase = True
-    mask.Pattern = PROCESSO_PATTERN
-      
-    Set result = mask.Execute(text)
-    
-    undo.StartCustomRecord ("qq")
-    
-    For Each mt In result
-        ActiveDocument.Range.InsertBefore mt.Value & vbCrLf
-    Next
-    
-    undo.EndCustomRecord
-
-   On Error GoTo 0
-   Exit Sub
-
-qq_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure qq of Módulo Helpers"
-    
-End Sub
-
-Sub WaitFor(NumOfSeconds As Long)
+Public Function WaitFor(NumOfSeconds As Long)
     
     Dim SngSec As Long
     SngSec = Timer + NumOfSeconds
@@ -197,7 +116,7 @@ Sub WaitFor(NumOfSeconds As Long)
         DoEvents
     Loop
 
-End Sub
+End Function
 
 Public Function Catch(error As ErrObject)
 
@@ -211,17 +130,16 @@ Public Function Catch(error As ErrObject)
 
 End Function
 
-Public Sub loadStyles()
+Public Function removeComments()
    
-   On Error GoTo loadStyles_Error
+    Dim oRng As Word.Range, i As Integer
+   
+    Set oRng = ActiveDocument.Range
 
-    ActiveDocument.ApplyQuickStyleSet2 "GMJD"
+    With oRng.Comments
+      For i = .Count To 1 Step -1
+           .Item(i).Delete
+      Next i
+    End With
 
-   On Error GoTo 0
-   Exit Sub
-
-loadStyles_Error:
-
-    Catch Err
-
-End Sub
+End Function
