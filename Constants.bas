@@ -1,4 +1,5 @@
 Attribute VB_Name = "Constants"
+Option Explicit
 
 Public Const LATIN_FILEPATH As String = "K:\GMJD\Macros\latim.txt"
 Public Const DIC_FILEPATH As String = "K:\GMJD\Macros\dicionario.txt"

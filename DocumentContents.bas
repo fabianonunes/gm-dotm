@@ -1,4 +1,5 @@
 Attribute VB_Name = "DocumentContents"
+Option Explicit
 
 Sub italicsLatin()
 

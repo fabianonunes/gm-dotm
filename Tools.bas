@@ -1,4 +1,6 @@
 Attribute VB_Name = "Tools"
+Option Explicit
+
 Sub qq()
     
     Dim clipboard As DataObject
