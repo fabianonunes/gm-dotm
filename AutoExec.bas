@@ -2,6 +2,7 @@ Attribute VB_Name = "AutoExec"
 Option Explicit
 
 Dim oAppClass As New ThisApplication
+Public uiRibbon As IRibbonUI
 
 Public Sub AutoExec()
     
@@ -22,3 +23,7 @@ ErrorHandler:
     Catch Err
 
 End Sub
+
+Public Function RibbonOnload(ribbon As IRibbonUI)
+    Set uiRibbon = ribbon
+End Function
