@@ -13,10 +13,22 @@
 						size="large"/>
 
 					 <button
-						idMso="ReviewPreviousCommentWord"/>
-					 <button
-						idMso="ReviewNextCommentWord"/>
+						idMso="ReviewNextCommentWord"
+						imageMso="FillRight"/>
 
+					 <button
+						idMso="ReviewPreviousCommentWord"
+						imageMso="FillLeft"/>
+
+					<separator id="gm_sep1" />
+
+
+					 <button
+						id="gm_styles"
+						label="Aplicar Estilos"
+						imageMso="ChangeStylesMenu"
+                				onAction="Toolbar.loadStylesCallback"
+						size="large"/>
 
 					 <button
 						id="gm_latin"

@@ -259,3 +259,7 @@ try: Catch Err
 
 End Sub
 
+Public Function loadStylesCallback(control As IRibbonControl)
+    loadStyles
+End Function
+
