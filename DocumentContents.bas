@@ -86,7 +86,6 @@ finally:
     Exit Sub
 
 try:
-
     Catch Err
     Resume finally
     Resume
