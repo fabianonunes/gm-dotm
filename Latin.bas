@@ -66,5 +66,7 @@ try:
 
 End Sub
 
-
+Public Function italicsLatinCallback(control As IRibbonControl)
+    italicsLatin
+End Function
 
