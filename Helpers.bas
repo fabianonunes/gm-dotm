@@ -96,17 +96,6 @@ Public Function getPK(Id As Identifier)
        
 End Function
 
-Public Function openAll(Id As Identifier)
-
-    Dim pk
-    pk = getPK(Id)
-    
-    Navigate _
-        ("https://aplicacao6.tst.jus.br/esij/VisualizarPecas.do?visualizarTodos=1&anoProcInt=" _
-        & pk(1) & "&numProcInt=" & pk(0))
-
-End Function
-
 Public Function WaitFor(NumOfSeconds As Long)
     
     Dim SngSec As Long
