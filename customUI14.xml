@@ -1,0 +1,11 @@
+<customUI onLoad="AutoExec.RibbonOnload" xmlns="http://schemas.microsoft.com/office/2009/07/customui">
+	<ribbon startFromScratch="false">
+		<tabs>
+			<tab id="gmdotm" label="GM">
+				<group id="review" label="Revisão">
+					<toggleButton getPressed="DocumentContents.commentPressed" id="gm_review" imageMso="ReviewTrackChanges" label="Revisão" onAction="DocumentContents.commentAction" size="large"/>
+				</group>
+			</tab>
+		</tabs>
+	</ribbon>
+</customUI>
