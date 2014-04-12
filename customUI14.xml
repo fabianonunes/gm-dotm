@@ -3,7 +3,28 @@
 		<tabs>
 			<tab id="gmdotm" label="GM">
 				<group id="review" label="Revisão">
-					<toggleButton getPressed="DocumentContents.commentPressed" id="gm_review" imageMso="ReviewTrackChanges" label="Revisão" onAction="DocumentContents.commentAction" size="large"/>
+
+					<toggleButton
+						id="gm_review"
+						imageMso="ReviewTrackChanges"
+						label="Revisão"
+						onAction="DocumentContents.commentAction"
+						getPressed="DocumentContents.commentPressed"
+						size="large"/>
+
+					 <button
+						idMso="ReviewPreviousCommentWord"/>
+					 <button
+						idMso="ReviewNextCommentWord"/>
+
+
+					 <button
+						id="gm_latin"
+						label="Grifar Latim"
+						imageMso="FormControlLabel"
+                				onAction="Latin.italicsLatinCallback"
+						size="normal"/>
+
 				</group>
 			</tab>
 		</tabs>
