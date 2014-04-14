@@ -10,6 +10,15 @@ Private Declare Function ShellExecute _
   Optional ByVal Directory As String, _
   Optional ByVal WindowStyle As Long = vbMinimizedFocus _
   ) As Long
+
+Private Declare Function GetTempPath Lib "kernel32" _
+   Alias "GetTempPathA" (ByVal nBufferLength As Long, _
+   ByVal lpBuffer As String) As Long
+
+Private Declare Function GetTempFileName Lib "kernel32" _
+   Alias "GetTempFileNameA" (ByVal lpszPath As String, _
+   ByVal lpPrefixString As String, ByVal wUnique As Long, _
+   ByVal lpTempFileName As String) As Long
   
   
 Public Type Identifier
@@ -132,3 +141,23 @@ Public Function removeComments()
     End With
 
 End Function
+
+
+Public Function CreateTempFile(sPrefix As String) As String
+
+   Dim sTmpPath As String * 512
+   Dim sTmpName As String * 576
+   Dim nRet As Long
+
+   nRet = GetTempPath(512, sTmpPath)
+   If (nRet > 0 And nRet < 512) Then
+      nRet = GetTempFileName(sTmpPath, sPrefix, 0, sTmpName)
+      If nRet <> 0 Then
+         CreateTempFile = Left$(sTmpName, _
+            InStr(sTmpName, vbNullChar) - 1)
+      End If
+   End If
+End Function
+
+
+
