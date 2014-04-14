@@ -53,8 +53,3 @@ oApp_DocumentBeforeSave_Error:
         ") in procedure oApp_DocumentBeforeSave of Módulo de classe ThisApplication"
 End Sub
 
-Private Sub oApp_DocumentOpen(ByVal Doc As Document)
-End Sub
-
-Private Sub oApp_Quit()
-End Sub
