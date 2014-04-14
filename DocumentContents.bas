@@ -18,9 +18,6 @@ On Error GoTo try
         Exit Sub
     End If
     
-    SendKeys "%v%"
-    DoEvents ' confirma a ativação do ribbon
-   
     System.Cursor = wdCursorWait
     Application.ScreenUpdating = False
     
