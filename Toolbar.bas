@@ -65,6 +65,7 @@ Public Sub loadStyles()
 On Error GoTo try
 
     ActiveDocument.ApplyQuickStyleSet2 "GMJD"
+    AutoExec.uiRibbon.ActivateTabMso "TabHome"
 
 finally: On Error Resume Next
     Exit Sub
