@@ -1,7 +1,11 @@
 <customUI onLoad="AutoExec.RibbonOnload" xmlns="http://schemas.microsoft.com/office/2009/07/customui">
+
 	<ribbon startFromScratch="false">
+
 		<tabs>
+
 			<tab id="gmdotm" label="ƒ: GM" keytip="z">
+
 				<group id="gm_group_review" label="Revisão">
 
 					<toggleButton
@@ -26,7 +30,7 @@
 					 <button
 						id="gm_styles"
 						keytip="Q"
-						label="Aplicar Estilos"
+						label="Carregar Estilos"
 						imageMso="ChangeStylesMenu"
                 		onAction="Toolbar.loadStylesCallback"
 						size="large"/>
@@ -95,7 +99,36 @@
 
 				</group>
 
+				<group id="gm_printing" label="Impressão">
+
+					<splitButton id="splitButton" size="large" >
+
+						<button
+							id="carimbar"
+							label="Carimbar para Impressão"
+							imageMso="FileMarkAsFinal"
+							onAction="PDF.stampCallback"/>
+
+						<menu id="carimbador_menu">
+
+							<menuSeparator id="tipo" title="Tipo" />
+							<checkBox id="ATENÇÃO_MINISTRO" label="Atenção Ministro" onAction="Pdf.tipoAction" getPressed="Pdf.tipoPressed" />
+							<checkBox id="MATÉRIA_COMUM" label="Matéria Comum" onAction="Pdf.tipoAction" getPressed="Pdf.tipoPressed" />
+							<checkBox id="MODELO_ADAPTADO" label="Modelo Adaptado" onAction="Pdf.tipoAction" getPressed="Pdf.tipoPressed" />
+
+							<menuSeparator id="classe" title="Classe" />
+							<checkBox id="AGRAVO_DE_INSTRUMENTO_A_PROVER" label="Agravo de Instrumento a Prover" onAction="Pdf.classeAction" getPressed="Pdf.classePressed" />
+
+						</menu>
+
+					</splitButton>
+
+				</group>
+
 			</tab>
+
 		</tabs>
+
 	</ribbon>
+
 </customUI>
