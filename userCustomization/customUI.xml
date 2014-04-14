@@ -1,0 +1,13 @@
+<mso:customUI xmlns:doc="http://schemas.microsoft.com/office/2006/01/customui/currentDocument" xmlns:mso="http://schemas.microsoft.com/office/2006/01/customui">
+	<mso:ribbon>
+		<mso:qat>
+			<mso:documentControls>
+				<mso:button idQ="doc:JoinLines_1" imageMso="FormControlLabel" label="Juntar linhas do Acórdão" onAction="JoinLines" visible="true"/>
+				<mso:separator idQ="doc:sep3" visible="true"/>
+				<mso:button idQ="doc:openAllPDFs_1" imageMso="ShapesDuplicate" label="Visualizar Todos (PDFs)" onAction="openAllPDFs" visible="true"/>
+				<mso:button idQ="doc:openAcordaoFolder_1" imageMso="CategoryCollapse" label="Acórdãos TRT" onAction="openAcordaoFolder" visible="true"/>
+				<mso:separator idQ="doc:sep1" visible="true"/>
+			</mso:documentControls>
+		</mso:qat>
+	</mso:ribbon>
+</mso:customUI>
