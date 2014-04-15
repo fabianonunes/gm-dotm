@@ -8,13 +8,17 @@ Private Function stamp()
    
 On Error GoTo try
     
-    Dim pdDoc As Acrobat.AcroPDDoc
-    Dim jsObj As Object
-    Dim tempFile As String
-    Dim formDoc As Acrobat.AcroPDDoc
-    Dim jsFormObj As Object
+    Dim pdDoc        As Acrobat.AcroPDDoc
+    Dim formDoc      As Acrobat.AcroPDDoc
+    
+    Dim jsObj        As Object
+    Dim jsFormObj    As Object
+
+    Dim tempFile     As String
     Dim tempFileForm As String
-    Dim formData As String
+    Dim formData     As String
+    
+    waitApplication
     
     tempFile = CreateTempFile("car")
     exportToPdf (tempFile)
@@ -25,15 +29,17 @@ On Error GoTo try
     Set jsObj = pdDoc.GetJSObject
     
     If CARIMBO_CLASSE <> "" Then
-        jsObj.addWatermarkFromFile toAcroPath(CARIMBOS_PATH) & CARIMBO_CLASSE & ".pdf", 0, 0, 0
+        jsObj.addWatermarkFromFile toAcroPath(CARIMBOS_PATH) & CARIMBO_CLASSE & ".pdf", 0, 0
     End If
     
     If CARIMBO_TIPO <> "" Then
-        jsObj.addWatermarkFromFile toAcroPath(CARIMBOS_PATH) & CARIMBO_TIPO & ".pdf", 0, 0, 0
-    End If
-    
-    If CARIMBO_TIPO = "ATENÇÃO_MINISTRO" Then
-        formData = InputBox(prompt:="Alguma mensagem?")
+        
+        jsObj.addWatermarkFromFile toAcroPath(CARIMBOS_PATH) & CARIMBO_TIPO & ".pdf", 0, 0
+        
+        If CARIMBO_TIPO = "ATENÇÃO_MINISTRO" Then
+            formData = InputBox(prompt:="Alguma mensagem?")
+        End If
+        
     End If
     
     If formData <> "" Then
@@ -56,19 +62,24 @@ On Error GoTo try
         formDoc.Save PDSaveFull, tempFileForm
         
         tempFileForm = toAcroPath(tempFileForm)
-        jsObj.addWatermarkFromFile tempFileForm, 0, 0, 0
+        jsObj.addWatermarkFromFile tempFileForm, 0, 0
     
     End If
     
     pdDoc.OpenAVDoc ActiveDocument.Name
     pdDoc.ClearFlags PDDocNeedsSave
     
-finally: On Error Resume Next 'ou [Goto 0]
-   pdDoc.Close
-   Kill tempFile
-   Kill tempFileForm
-   Set pdDoc = Nothing
-   Exit Function
+finally: On Error Resume Next
+    
+    resumeApplication
+    pdDoc.Close
+    
+    Kill tempFile
+    Kill tempFileForm
+    
+    Set pdDoc = Nothing
+    
+    Exit Function
 
 try: Catch Err
     Resume finally
