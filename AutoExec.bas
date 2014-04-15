@@ -6,8 +6,8 @@ Public uiRibbon As IRibbonUI
 
 Public Sub AutoExec()
     
-    On Error GoTo ErrorHandler:
-    
+On Error GoTo try
+
     If oAppClass.oApp Is Nothing Then
     
         ' habilitar eventos do Word.Application
@@ -15,13 +15,14 @@ Public Sub AutoExec()
         Set oAppClass.oApp = Word.Application
     
     End If
-    
-    
-    Exit Sub
 
-ErrorHandler:
-    Catch Err
+finally: On Error Resume Next 'ou [Goto 0]
+   Exit Sub
 
+try: Catch Err
+    Resume finally
+    Resume
+    
 End Sub
 
 Public Function RibbonOnload(ribbon As IRibbonUI)

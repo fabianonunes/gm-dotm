@@ -3,11 +3,11 @@ Option Explicit
 
 Sub esij()
     
-    Dim Id  As Identifier
-    Dim URL As String
-   
 On Error GoTo try
 
+    Dim Id  As Identifier
+    Dim URL As String
+    
     System.Cursor = wdCursorWait
     Application.ScreenUpdating = False
         
@@ -32,12 +32,12 @@ End Sub
 
 Sub openAcordaoFolder()
 
+On Error GoTo try
+
     Dim Id       As Identifier
     Dim folder   As String
     Dim filename As String
-
-On Error GoTo try
-
+    
     System.Cursor = wdCursorWait
     Application.ScreenUpdating = False
 
@@ -66,6 +66,8 @@ End Sub
 
 Sub importUltimoDespacho()
     
+On Error GoTo try
+
     Dim Id       As Identifier
     Dim undo     As UndoRecord
     Dim request  As WinHttp.WinHttpRequest
@@ -74,8 +76,6 @@ Sub importUltimoDespacho()
     Dim URL      As String
     Dim htmlText As String
     
-On Error GoTo try
-
     System.Cursor = wdCursorWait
     Application.ScreenUpdating = False
         
@@ -135,11 +135,11 @@ End Sub
 
 Sub openUltimoDespacho()
     
-    Dim Id   As Identifier
-    Dim pk() As String
-
 On Error GoTo try
 
+    Dim Id   As Identifier
+    Dim pk() As String
+    
     System.Cursor = wdCursorWait
     Application.ScreenUpdating = False
 

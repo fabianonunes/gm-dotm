@@ -5,6 +5,8 @@ Private CARIMBO_TIPO As String
 Private CARIMBO_CLASSE As String
 
 Private Function stamp()
+   
+On Error GoTo try
     
     Dim pdDoc As Acrobat.AcroPDDoc
     Dim jsObj As Object
@@ -15,8 +17,6 @@ Private Function stamp()
     
     Dim tempFile As String
     Dim formData As String
-    
-On Error GoTo try
     
     tempFile = CreateTempFile("car")
     tempFileForm = CreateTempFile("car")
@@ -63,7 +63,6 @@ On Error GoTo try
         jsObj.addWatermarkFromFile tempFileForm, 0, 0, 0
     
     End If
-    
     
     pdDoc.OpenAVDoc ActiveDocument.Name
     

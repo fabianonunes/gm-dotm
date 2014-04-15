@@ -14,10 +14,11 @@ Attribute oApp.VB_VarHelpID = -1
 
 Private Sub oApp_DocumentBeforeSave(ByVal Doc As Document, SaveAsUI As Boolean, Cancel As Boolean)
 
-    Dim oRng As Word.Range, i As Integer
-   
-   On Error GoTo oApp_DocumentBeforeSave_Error
+On Error GoTo try
 
+    Dim oRng As Word.Range
+    Dim i As Integer
+    
     Set oRng = Doc.Range
     
     If oRng.Comments.Count = 0 Then
@@ -44,12 +45,12 @@ Private Sub oApp_DocumentBeforeSave(ByVal Doc As Document, SaveAsUI As Boolean, 
     
     End Select
 
-   On Error GoTo 0
+finally: On Error Resume Next 'ou [Goto 0]
    Exit Sub
 
-oApp_DocumentBeforeSave_Error:
+try: Catch Err
+    Resume finally
+    Resume
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & _
-        ") in procedure oApp_DocumentBeforeSave of Módulo de classe ThisApplication"
 End Sub
 

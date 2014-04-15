@@ -20,7 +20,6 @@ Private Declare Function GetTempFileName Lib "kernel32" _
    ByVal lpPrefixString As String, ByVal wUnique As Long, _
    ByVal lpTempFileName As String) As Long
   
-  
 Public Type Identifier
     Numero As String
     Digito As String

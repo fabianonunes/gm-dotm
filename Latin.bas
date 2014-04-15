@@ -2,7 +2,9 @@ Attribute VB_Name = "Latin"
 Option Explicit
 
 Sub italicsLatin()
-
+   
+On Error GoTo try
+   
     Dim fs      As FileSystemObject
     Dim stream  As TextStream
     Dim text    As String
@@ -10,8 +12,6 @@ Sub italicsLatin()
     Dim oRng    As Word.Range
     Dim counter As Integer
     
-On Error GoTo try
-   
     System.Cursor = wdCursorWait
     Application.ScreenUpdating = False
 

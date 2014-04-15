@@ -3,15 +3,15 @@ Option Explicit
 
 Sub qq()
     
+On Error GoTo try
+
     Dim clipboard As DataObject
     Dim text      As String
     Dim mask      As RegExp
     Dim result    As MatchCollection
     Dim mt        As Match
     Dim undo      As UndoRecord
-        
-On Error GoTo try
-
+    
     Set undo = Application.UndoRecord
 
     Set clipboard = New DataObject
