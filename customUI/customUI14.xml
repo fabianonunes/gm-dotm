@@ -107,17 +107,17 @@
 							id="carimbar"
 							label="Carimbar para Impressão"
 							imageMso="FileMarkAsFinal"
-							onAction="PDF.stampCallback"/>
+							onAction="Stamp.stampCallback"/>
 
 						<menu id="carimbador_menu">
 
 							<menuSeparator id="tipo" title="Tipo" />
-							<checkBox id="ATENÇÃO_MINISTRO" label="Atenção Ministro" onAction="Pdf.tipoAction" getPressed="Pdf.tipoPressed" />
-							<checkBox id="MATÉRIA_COMUM" label="Matéria Comum" onAction="Pdf.tipoAction" getPressed="Pdf.tipoPressed" />
-							<checkBox id="MODELO_ADAPTADO" label="Modelo Adaptado" onAction="Pdf.tipoAction" getPressed="Pdf.tipoPressed" />
+							<checkBox id="ATENÇÃO_MINISTRO" label="Atenção Ministro" onAction="Stamp.tipoAction" getPressed="Stamp.tipoPressed" />
+							<checkBox id="MATÉRIA_COMUM" label="Matéria Comum" onAction="Stamp.tipoAction" getPressed="Stamp.tipoPressed" />
+							<checkBox id="MODELO_ADAPTADO" label="Modelo Adaptado" onAction="Stamp.tipoAction" getPressed="Stamp.tipoPressed" />
 
 							<menuSeparator id="classe" title="Classe" />
-							<checkBox id="AGRAVO_DE_INSTRUMENTO_A_PROVER" label="Agravo de Instrumento a Prover" onAction="Pdf.classeAction" getPressed="Pdf.classePressed" />
+							<checkBox id="AGRAVO_DE_INSTRUMENTO_A_PROVER" label="Agravo de Instrumento a Prover" onAction="Stamp.classeAction" getPressed="Stamp.classePressed" />
 
 						</menu>
 
