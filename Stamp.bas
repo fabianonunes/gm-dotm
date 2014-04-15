@@ -68,7 +68,7 @@ On Error GoTo try
     
     End If
     
-    pdDoc.OpenAVDoc ActiveDocument.Name
+    pdDoc.OpenAVDoc ActiveDocument.name
     pdDoc.ClearFlags PDDocNeedsSave
     
 finally: On Error Resume Next
@@ -118,7 +118,7 @@ On Error GoTo try
 finally: On Error Resume Next
    Exit Function
 
-try: Catch Err
+try: Catch Err, "tipoPressed"
     Resume finally
     Resume
     
@@ -140,7 +140,7 @@ On Error GoTo try
 finally: On Error Resume Next
    Exit Function
 
-try: Catch Err
+try: Catch Err, "tipoAction"
     Resume finally
     Resume
     
@@ -158,7 +158,7 @@ On Error GoTo try
 finally: On Error Resume Next
    Exit Function
 
-try: Catch Err
+try: Catch Err, "classePressed"
     Resume finally
     Resume
     
@@ -178,7 +178,7 @@ On Error GoTo try
 finally: On Error Resume Next
    Exit Function
 
-try: Catch Err
+try: Catch Err, "classeAction"
     Resume finally
     Resume
     

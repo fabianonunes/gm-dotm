@@ -1,8 +1,7 @@
 Attribute VB_Name = "DocumentContents"
 Option Explicit
 
-Sub commentAction(control As IRibbonControl, pressed As Boolean)
-         
+Sub comment()
 On Error GoTo try
 
     Dim excel_app   As Excel.Application
@@ -13,13 +12,7 @@ On Error GoTo try
     Dim doc_rng     As Range
     Dim undo        As UndoRecord
     
-    If Not pressed Then
-        removeComments
-        Exit Sub
-    End If
-    
-    System.Cursor = wdCursorWait
-    Application.ScreenUpdating = False
+    waitApplication
     
     AutoExec.AutoExec ' liga os eventos do oApp, caso necessário
 
@@ -74,9 +67,8 @@ On Error GoTo try
 finally:
     On Error Resume Next
     
-    Application.ScreenUpdating = True
+    resumeApplication
     undo.EndCustomRecord
-    AutoExec.uiRibbon.InvalidateControl (control.Id)
     workbook.Close
     Set workbook = Nothing
 
@@ -89,6 +81,36 @@ try:
 
 End Sub
 
+Function commentAction(control As IRibbonControl, pressed As Boolean)
+On Error GoTo try
+
+    If Not pressed Then
+        removeComments
+        Exit Function
+    End If
+    
+    DocumentContents.comment
+
+finally: On Error Resume Next
+    AutoExec.uiRibbon.InvalidateControl control.Id
+    Exit Function
+
+try: Catch Err, "commentAction"
+    Resume finally
+    Resume
+
+End Function
+
 Public Function commentPressed(control As IRibbonControl, ByRef toggleState)
+
+On Error GoTo try
+
     toggleState = ActiveDocument.Comments.Count > 0
+
+finally: On Error Resume Next
+   Exit Function
+
+try: Catch Err, "commentPressed"
+    Resume finally
+    Resume
 End Function

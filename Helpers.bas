@@ -115,14 +115,14 @@ Public Function WaitFor(NumOfSeconds As Long)
 
 End Function
 
-Public Function Catch(error As ErrObject)
+Public Function Catch(error As ErrObject, Optional name As String = "...")
 
     Application.ScreenUpdating = True
     
     If (error.Number = 600) Then
         MsgBox "O nome do arquivo não se parece com um processo"
     Else
-        MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure ..."
+        MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure " & name
     End If
 
 End Function

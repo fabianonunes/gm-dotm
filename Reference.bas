@@ -11,7 +11,7 @@ On Error GoTo try
     System.Cursor = wdCursorWait
     Application.ScreenUpdating = False
         
-    Id = ParseIdentifier(ActiveDocument.Name)
+    Id = ParseIdentifier(ActiveDocument.name)
     
     URL = "https://aplicacao6.tst.jus.br/esij/ConsultarProcesso.do?consultarNumeracao=Consultar" _
     & "&numProc=" & Id.Numero & "&digito=" & Id.Digito & "&anoProc=" & Id.Ano & "&justica=" & Id.Justica _
@@ -41,7 +41,7 @@ On Error GoTo try
     System.Cursor = wdCursorWait
     Application.ScreenUpdating = False
 
-    Id = ParseIdentifier(ActiveDocument.Name)
+    Id = ParseIdentifier(ActiveDocument.name)
        
     folder = "K:\TRT\TRT" & Format(Id.Tribunal, "00")
         
@@ -79,7 +79,7 @@ On Error GoTo try
     System.Cursor = wdCursorWait
     Application.ScreenUpdating = False
         
-    Id = ParseIdentifier(ActiveDocument.Name)
+    Id = ParseIdentifier(ActiveDocument.name)
     pk = getPK(Id)
     
     Set request = New WinHttp.WinHttpRequest
@@ -143,7 +143,7 @@ On Error GoTo try
     System.Cursor = wdCursorWait
     Application.ScreenUpdating = False
 
-    Id = ParseIdentifier(ActiveDocument.Name)
+    Id = ParseIdentifier(ActiveDocument.name)
     pk = getPK(Id)
     
     Navigate "http://aplicacao5.tst.jus.br/decisoes/consultas/ultimoDespachoTRT/" & pk(1) & "/" & pk(0)
@@ -169,7 +169,7 @@ On Error GoTo try
     Dim Id As Identifier
     Dim pk() As String
     
-    Id = ParseIdentifier(ActiveDocument.Name)
+    Id = ParseIdentifier(ActiveDocument.name)
     pk = getPK(Id)
     
     Navigate _
