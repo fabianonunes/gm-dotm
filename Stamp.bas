@@ -1,10 +1,10 @@
-Attribute VB_Name = "PDF"
+Attribute VB_Name = "Stamp"
 Option Explicit
 
 Private CARIMBO_TIPO As String
 Private CARIMBO_CLASSE As String
 
-Private Function stamp()
+Private Function Stamp()
    
 On Error GoTo try
     
@@ -27,6 +27,8 @@ On Error GoTo try
     pdDoc.Open tempFile
     
     Set jsObj = pdDoc.GetJSObject
+    
+    jsObj.addWatermarkFromFile toAcroPath(CARIMBOS_PATH) & "TIMBRE.pdf"
     
     If CARIMBO_CLASSE <> "" Then
         jsObj.addWatermarkFromFile toAcroPath(CARIMBOS_PATH) & CARIMBO_CLASSE & ".pdf", 0, 0
@@ -101,7 +103,7 @@ Private Function toAcroPath(path As String)
 End Function
 
 Public Function stampCallback(control As IRibbonControl)
-    stamp
+    Stamp
 End Function
 
 Public Function tipoPressed(control As IRibbonControl, ByRef pressedState)
