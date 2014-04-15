@@ -3,6 +3,8 @@ Option Explicit
 
 Sub commentAction(control As IRibbonControl, pressed As Boolean)
          
+On Error GoTo try
+
     Dim excel_app   As Excel.Application
     Dim workbook    As Excel.workbook
     Dim sheet       As Excel.Worksheet
@@ -11,8 +13,6 @@ Sub commentAction(control As IRibbonControl, pressed As Boolean)
     Dim doc_rng     As Range
     Dim undo        As UndoRecord
     
-On Error GoTo try
-
     If Not pressed Then
         removeComments
         Exit Sub
@@ -48,7 +48,7 @@ On Error GoTo try
                 With doc_rng
 
                     If (table_rng.Cells(3) = "" Or .Style = table_rng.Cells(3)) _
-                        And (Not .Style Like "Transcrição*") Then
+                        And (.ParagraphFormat.LeftIndent < 120) Then
                         
                         .Comments.Add Range:=doc_rng, text:=table_rng.Cells(2).Value
                         
@@ -88,8 +88,6 @@ try:
     Resume
 
 End Sub
-
-
 
 Public Function commentPressed(control As IRibbonControl, ByRef toggleState)
     toggleState = ActiveDocument.Comments.Count > 0
