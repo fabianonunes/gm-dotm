@@ -16,7 +16,7 @@ On Error GoTo try
     
     End If
 
-finally: On Error Resume Next 'ou [Goto 0]
+finally: On Error Resume Next
    Exit Sub
 
 try: Catch Err

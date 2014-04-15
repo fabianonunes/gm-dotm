@@ -10,27 +10,14 @@ On Error GoTo try
     
     Dim pdDoc As Acrobat.AcroPDDoc
     Dim jsObj As Object
-    
+    Dim tempFile As String
     Dim formDoc As Acrobat.AcroPDDoc
     Dim jsFormObj As Object
     Dim tempFileForm As String
-    
-    Dim tempFile As String
     Dim formData As String
     
     tempFile = CreateTempFile("car")
-    tempFileForm = CreateTempFile("car")
-    
-    ' o arquivo deve terminar em .pdf para o acrojs carimbar
-    Name tempFileForm As tempFileForm & ".pdf"
-    tempFileForm = tempFileForm & ".pdf"
-    
-    ActiveDocument.ExportAsFixedFormat OutputFileName:=tempFile, _
-        ExportFormat:=wdExportFormatPDF, OpenAfterExport:=False, _
-        OptimizeFor:=wdExportOptimizeForPrint, Range:=wdExportAllDocument, From:=1, _
-        To:=1, Item:=wdExportDocumentContent, IncludeDocProps:=False, _
-        KeepIRM:=False, CreateBookmarks:=wdExportCreateHeadingBookmarks, _
-        DocStructureTags:=True, BitmapMissingFonts:=False, UseISO19005_1:=False
+    exportToPdf (tempFile)
         
     Set pdDoc = New Acrobat.AcroPDDoc
     pdDoc.Open tempFile
@@ -38,33 +25,43 @@ On Error GoTo try
     Set jsObj = pdDoc.GetJSObject
     
     If CARIMBO_CLASSE <> "" Then
-        jsObj.addWatermarkFromFile CARIMBOS_ACROPATH & CARIMBO_CLASSE & ".pdf", 0, 0, 0
+        jsObj.addWatermarkFromFile toAcroPath(CARIMBOS_PATH) & CARIMBO_CLASSE & ".pdf", 0, 0, 0
     End If
     
     If CARIMBO_TIPO <> "" Then
-        jsObj.addWatermarkFromFile CARIMBOS_ACROPATH & CARIMBO_TIPO & ".pdf", 0, 0, 0
+        jsObj.addWatermarkFromFile toAcroPath(CARIMBOS_PATH) & CARIMBO_TIPO & ".pdf", 0, 0, 0
     End If
-    
     
     If CARIMBO_TIPO = "ATENÇÃO_MINISTRO" Then
         formData = InputBox(prompt:="Alguma mensagem?")
     End If
     
     If formData <> "" Then
+    
+        tempFileForm = CreateTempFile("car")
+        
+        ' o arquivo deve terminar em .pdf para o acrojs carimbar
+        Name tempFileForm As tempFileForm & ".pdf"
+        tempFileForm = tempFileForm & ".pdf"
+    
+        formData = Replace(Replace(formData, ";", vbCrLf), vbCrLf & " ", vbCrLf)
         
         Set formDoc = New Acrobat.AcroPDDoc
         formDoc.Open CARIMBOS_PATH & "AM.pdf"
         
         Set jsFormObj = formDoc.GetJSObject
-        jsFormObj.getField("AM").Value = Replace(formData, ";", vbCrLf)
+        jsFormObj.getField("AM").Value = formData
         jsFormObj.flattenPages
+        
         formDoc.Save PDSaveFull, tempFileForm
+        
         tempFileForm = toAcroPath(tempFileForm)
         jsObj.addWatermarkFromFile tempFileForm, 0, 0, 0
     
     End If
     
     pdDoc.OpenAVDoc ActiveDocument.Name
+    pdDoc.ClearFlags PDDocNeedsSave
     
 finally: On Error Resume Next 'ou [Goto 0]
    pdDoc.Close
@@ -77,6 +74,15 @@ try: Catch Err
     Resume finally
     Resume
         
+End Function
+
+Private Function exportToPdf(tempFile As String)
+    ActiveDocument.ExportAsFixedFormat OutputFileName:=tempFile, _
+        ExportFormat:=wdExportFormatPDF, OpenAfterExport:=False, _
+        OptimizeFor:=wdExportOptimizeForPrint, Range:=wdExportAllDocument, From:=1, _
+        To:=1, Item:=wdExportDocumentContent, IncludeDocProps:=False, _
+        KeepIRM:=False, CreateBookmarks:=wdExportCreateHeadingBookmarks, _
+        DocStructureTags:=True, BitmapMissingFonts:=False, UseISO19005_1:=False
 End Function
 
 Private Function toAcroPath(path As String)

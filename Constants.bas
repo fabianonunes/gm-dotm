@@ -5,7 +5,6 @@ Public Const LATIN_FILEPATH As String = "K:\GMJD\Macros\latim.txt"
 Public Const DIC_FILEPATH As String = "K:\GMJD\Macros\dicionario.txt"
 Public Const DICX_FILEPATH As String = "K:\GMJD\Macros\dicionario.xlsx"
 
-Public Const CARIMBOS_ACROPATH As String = "/K/001 - JOD - GMJOD (2013)/005 - DIVERSOS/Utilitarios/Carimbos/"
 Public Const CARIMBOS_PATH As String = "K:\001 - JOD - GMJOD (2013)\005 - DIVERSOS\Utilitarios\Carimbos\"
 
 ' TODO: zero pad
