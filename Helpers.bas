@@ -19,7 +19,7 @@ Private Declare Function GetTempFileName Lib "kernel32" _
    Alias "GetTempFileNameA" (ByVal lpszPath As String, _
    ByVal lpPrefixString As String, ByVal wUnique As Long, _
    ByVal lpTempFileName As String) As Long
-  
+
 Public Type Identifier
     Numero As String
     Digito As String
@@ -32,15 +32,17 @@ End Type
 
 Public Function ParseIdentifier(text As String) As Identifier
 
-    Dim mask As New RegExp, result As MatchCollection
-    Dim firstMatch As Match
-    
+    Dim mask        As RegExp
+    Dim result      As MatchCollection
+    Dim firstMatch  As Match
+
+    Set mask = New RegExp
     mask.Global = True
     mask.IgnoreCase = True
     mask.Pattern = PROCESSO_PATTERN
-      
+
     Set result = mask.Execute(text)
-    
+
     If (result.Count > 0) Then
         Set firstMatch = result.Item(0)
         ParseIdentifier.Numero = firstMatch.SubMatches(0)
@@ -65,47 +67,50 @@ Public Function Explore(folder As String)
 End Function
 
 Public Function getPK(Id As Identifier)
-    
+
     Dim URL        As String
     Dim headers    As String
-    Dim retval(2)  As String
+    Dim pk(2)      As String
     Dim result     As MatchCollection
     Dim firstMatch As Match
-    
-    Dim mask       As New RegExp
-    Dim request    As New WinHttpRequest
 
+    Dim mask       As RegExp
+    Dim request    As WinHttp.WinHttpRequest
+
+    Set mask = New RegExp
     mask.Global = True
     mask.IgnoreCase = True
     mask.Pattern = "num_int=([0-9]*)&ano_int=([0-9]{4})"
-     
+
+    Set request = New WinHttp.WinHttpRequest
+
     URL = _
         "http://ext02.tst.jus.br/pls/ap01/ap_proc100.dados_processos?num_proc=" & _
         Id.Numero & "&dig_proc=" & Id.Digito & "&ano_proc=" & Id.Ano & _
         "&num_orgao=" & Id.Justica & "&TRT_proc=" & Id.Tribunal & "&vara_proc=" & _
         Id.Vara
-        
+
     request.Open "GET", URL
     request.Option(WinHttpRequestOption_EnableRedirects) = False
     request.Send
-        
+
     headers = request.GetAllResponseHeaders()
-        
+
     Set result = mask.Execute(headers)
-        
+
     If (result.Count > 0) Then
-        
+
         Set firstMatch = result.Item(0)
-        retval(0) = firstMatch.SubMatches(0)
-        retval(1) = firstMatch.SubMatches(1)
-        getPK = retval
-            
+        pk(0) = firstMatch.SubMatches(0)
+        pk(1) = firstMatch.SubMatches(1)
+        getPK = pk
+
     End If
-       
+
 End Function
 
 Public Function WaitFor(NumOfSeconds As Long)
-    
+
     Dim SngSec As Long
     SngSec = Timer + NumOfSeconds
 
@@ -117,8 +122,8 @@ End Function
 
 Public Function Catch(error As ErrObject, Optional name As String = "...")
 
-    Application.ScreenUpdating = True
-    
+    Helpers.resumeApplication
+
     If (error.Number = 600) Then
         MsgBox "O nome do arquivo não se parece com um processo"
     Else
@@ -128,9 +133,9 @@ Public Function Catch(error As ErrObject, Optional name As String = "...")
 End Function
 
 Public Function removeComments()
-   
+
     Dim oRng As Word.Range, i As Integer
-   
+
     Set oRng = ActiveDocument.Range
 
     With oRng.Comments
@@ -149,6 +154,7 @@ Public Function CreateTempFile(sPrefix As String) As String
    Dim nRet As Long
 
    nRet = GetTempPath(512, sTmpPath)
+   
    If (nRet > 0 And nRet < 512) Then
       nRet = GetTempFileName(sTmpPath, sPrefix, 0, sTmpName)
       If nRet <> 0 Then
@@ -156,7 +162,16 @@ Public Function CreateTempFile(sPrefix As String) As String
             InStr(sTmpName, vbNullChar) - 1)
       End If
    End If
+   
 End Function
 
+Public Function waitApplication()
+    System.Cursor = wdCursorWait
+    Application.ScreenUpdating = False
+End Function
+
+Public Function resumeApplication()
+    Application.ScreenUpdating = True
+End Function
 
 

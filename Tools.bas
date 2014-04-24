@@ -47,12 +47,3 @@ try: Catch Err
     
 End Sub
 
-Public Function waitApplication()
-    System.Cursor = wdCursorWait
-    Application.ScreenUpdating = False
-End Function
-
-Public Function resumeApplication()
-    Application.ScreenUpdating = True
-End Function
-

@@ -1,6 +1,8 @@
 Attribute VB_Name = "Reference"
 Option Explicit
 
+Private Const ACORDAOS_FOLDER As String = "K:\TRT\"
+
 Sub esij()
     
 On Error GoTo try
@@ -8,8 +10,7 @@ On Error GoTo try
     Dim Id  As Identifier
     Dim URL As String
     
-    System.Cursor = wdCursorWait
-    Application.ScreenUpdating = False
+    Helpers.waitApplication
         
     Id = ParseIdentifier(ActiveDocument.name)
     
@@ -20,7 +21,7 @@ On Error GoTo try
     Navigate URL
 
 finally: On Error Resume Next
-    Application.ScreenUpdating = True
+    Helpers.resumeApplication
     Exit Sub
 
 try: Catch Err
@@ -38,13 +39,12 @@ On Error GoTo try
     Dim folder   As String
     Dim filename As String
     
-    System.Cursor = wdCursorWait
-    Application.ScreenUpdating = False
+    Helpers.waitApplication
 
     Id = ParseIdentifier(ActiveDocument.name)
-       
-    folder = "K:\TRT\TRT" & Format(Id.Tribunal, "00")
-        
+
+    folder = ACORDAOS_FOLDER & "TRT" & Format(Id.Tribunal, "00")
+
     filename = folder & "\" & Id.Formatado
     
     If Dir(filename, vbDirectory) <> "" Then
@@ -55,7 +55,7 @@ On Error GoTo try
 
 
 finally: On Error Resume Next
-   Application.ScreenUpdating = False
+   Helpers.resumeApplication
    Exit Sub
 
 try: Catch Err
@@ -75,10 +75,9 @@ On Error GoTo try
     Dim pk()     As String
     Dim URL      As String
     Dim htmlText As String
-    
-    System.Cursor = wdCursorWait
-    Application.ScreenUpdating = False
-        
+
+    Helpers.waitApplication
+
     Id = ParseIdentifier(ActiveDocument.name)
     pk = getPK(Id)
     
@@ -123,7 +122,7 @@ On Error GoTo try
     End With
     
 finally: On Error Resume Next
-    Application.ScreenUpdating = True
+    Helpers.resumeApplication
     undo.EndCustomRecord
     Exit Sub
 
@@ -163,11 +162,10 @@ Sub openAllPDFs()
 
 On Error GoTo try
 
-    System.Cursor = wdCursorWait
-    Application.ScreenUpdating = False
-    
     Dim Id As Identifier
     Dim pk() As String
+    
+    Helpers.waitApplication
     
     Id = ParseIdentifier(ActiveDocument.name)
     pk = getPK(Id)
@@ -177,7 +175,7 @@ On Error GoTo try
         & pk(1) & "&numProcInt=" & pk(0))
 
 finally: On Error Resume Next
-    Application.ScreenUpdating = True
+    Helpers.resumeApplication
     Exit Sub
 
 try: Catch Err

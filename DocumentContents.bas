@@ -85,7 +85,7 @@ Function commentAction(control As IRibbonControl, pressed As Boolean)
 On Error GoTo try
 
     If Not pressed Then
-        removeComments
+        Helpers.removeComments
         Exit Function
     End If
     

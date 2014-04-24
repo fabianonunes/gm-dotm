@@ -12,8 +12,7 @@ On Error GoTo try
     Dim oRng    As Word.Range
     Dim counter As Integer
     
-    System.Cursor = wdCursorWait
-    Application.ScreenUpdating = False
+    Helpers.waitApplication
 
     Set fs = New FileSystemObject
     Set stream = fs.OpenTextFile(LATIN_FILEPATH)
@@ -54,7 +53,7 @@ On Error GoTo try
 
 finally:
     On Error Resume Next
-    Application.ScreenUpdating = True
+    Helpers.resumeApplication
     undo.EndCustomRecord
     stream.Close
     Exit Sub

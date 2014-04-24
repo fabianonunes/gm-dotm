@@ -18,7 +18,7 @@ On Error GoTo try
     Dim tempFileForm As String
     Dim formData     As String
     
-    waitApplication
+    Helpers.waitApplication
     
     tempFile = CreateTempFile("car")
     exportToPdf (tempFile)
@@ -73,7 +73,7 @@ On Error GoTo try
     
 finally: On Error Resume Next
     
-    resumeApplication
+    Helpers.resumeApplication
     pdDoc.Close
     
     Kill tempFile

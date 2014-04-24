@@ -4,11 +4,11 @@ Option Explicit
 Sub JoinLines()
 
 On Error GoTo try
-
-    System.Cursor = wdCursorWait
-    Application.ScreenUpdating = False
-    
+   
     Dim selBkUp As Range
+    
+    Helpers.waitApplication
+    
     Set selBkUp = ActiveDocument.Range(Selection.Range.Start, Selection.Range.End - 1)
     
     With selBkUp.Find
@@ -45,7 +45,7 @@ On Error GoTo try
     End With
     
 finally: On Error Resume Next
-    Application.ScreenUpdating = True
+    Helpers.resumeApplication
     Exit Sub
 
 try:
