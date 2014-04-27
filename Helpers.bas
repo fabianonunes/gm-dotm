@@ -28,18 +28,24 @@ Public Type Identifier
     Tribunal As String
     Vara As String
     Formatado As String
+    Padded As String
 End Type
 
-Public Function ParseIdentifier(text As String) As Identifier
+Public Function ParseIdentifier(text As String, Optional quiet As Boolean = False) As Identifier
 
-    Dim mask        As RegExp
-    Dim result      As MatchCollection
-    Dim firstMatch  As Match
+    Dim mask           As RegExp
+    Dim result         As MatchCollection
+    Dim firstMatch     As Match
+    Dim stripNonDigits As RegExp
 
     Set mask = New RegExp
     mask.Global = True
     mask.IgnoreCase = True
     mask.Pattern = PROCESSO_PATTERN
+    
+    Set stripNonDigits = New RegExp
+    stripNonDigits.Pattern = "[^0-9]"
+    stripNonDigits.Global = True
 
     Set result = mask.Execute(text)
 
@@ -52,8 +58,11 @@ Public Function ParseIdentifier(text As String) As Identifier
         ParseIdentifier.Tribunal = firstMatch.SubMatches(4)
         ParseIdentifier.Vara = firstMatch.SubMatches(5)
         ParseIdentifier.Formatado = firstMatch.Value
+        ParseIdentifier.Padded = Right(String(20, "0") & stripNonDigits.Replace(firstMatch.Value, ""), 20)
     Else
-        Err.Raise 600, "ParseIdentifier"
+        If Not quiet Then
+            Err.Raise 600, "ParseIdentifier"
+        End If
     End If
 
 End Function
