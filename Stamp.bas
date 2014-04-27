@@ -98,6 +98,44 @@ Private Function exportToPdf(tempFile As String)
         DocStructureTags:=True, BitmapMissingFonts:=False, UseISO19005_1:=False
 End Function
 
+
+Private Function spartanEncode128C(code As String)
+
+   ' http://en.wikipedia.org/wiki/Code_128
+   ' http://grandzebu.net/informatique/codbar-en/code128.htm
+   
+    Dim c     As String
+    Dim check As Integer
+    Dim pair  As Integer
+    Dim i     As Integer
+    Dim regex As RegExp
+   
+    c = Chr(210)
+    check = 105
+    
+    Set regex = New RegExp
+    regex.Pattern = "[^0-9]"
+    regex.Global = True
+    
+    code = regex.Replace(code, "") ' this is sparta
+    
+    If Len(code) Mod 2 > 0 Then
+       code = "0" & code ' this is spaaaaarta
+    End If
+    
+    For i = 1 To Len(code) Step 2
+       pair = 0 + Mid(code, i, 2)
+       check = check + pair * ((i - 1) / 2 + 1)
+       c = c & Chr(pair + IIf(pair < 95, 32, 105))
+    Next
+    
+    check = check Mod 103
+    c = c & Chr(check + IIf(check < 95, 32, 105)) & Chr(211)
+    
+    spartanEncode128C = c
+
+End Function
+
 Private Function toAcroPath(path As String)
     toAcroPath = "/" & Replace(Replace(path, ":", ""), "\", "/")
 End Function
