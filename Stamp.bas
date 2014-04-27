@@ -16,9 +16,13 @@ On Error GoTo try
 
     Dim tempFile     As String
     Dim tempFileForm As String
+    Dim tempBarcode  As String
     Dim formData     As String
-    
+    Dim Id           As Identifier
+        
     Helpers.waitApplication
+    
+    Id = ParseIdentifier(ActiveDocument.name, True)
     
     tempFile = CreateTempFile("car")
     exportToPdf (tempFile)
@@ -68,6 +72,30 @@ On Error GoTo try
     
     End If
     
+    If Id.Formatado <> "" Then
+    
+        tempBarcode = CreateTempFile("car")
+        
+        ' o arquivo deve terminar em .pdf para o acrojs carimbar
+        Name tempBarcode As tempBarcode & ".pdf"
+        tempBarcode = tempBarcode & ".pdf"
+    
+        formData = spartanEncode128C(Id.Padded)
+        
+        Set formDoc = New Acrobat.AcroPDDoc
+        formDoc.Open CARIMBOS_PATH & "BARCODE.pdf"
+        
+        Set jsFormObj = formDoc.GetJSObject
+        jsFormObj.getField("barcode").Value = formData
+        jsFormObj.flattenPages
+        
+        formDoc.Save PDSaveFull, tempBarcode
+        
+        tempFileForm = toAcroPath(tempBarcode)
+        jsObj.addWatermarkFromFile tempBarcode, 0, 0
+    
+    End If
+    
     pdDoc.OpenAVDoc ActiveDocument.name
     pdDoc.ClearFlags PDDocNeedsSave
     
@@ -78,6 +106,7 @@ finally: On Error Resume Next
     
     Kill tempFile
     Kill tempFileForm
+    Kill tempBarcode
     
     Set pdDoc = Nothing
     
