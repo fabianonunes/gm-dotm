@@ -64,6 +64,38 @@ try: Catch Err
     
 End Sub
 
+Sub openMemorialFolder()
+
+On Error GoTo try
+
+    Dim Id       As Identifier
+    Dim folder   As String
+    Dim filename As String
+    
+    Helpers.waitApplication
+
+    Id = ParseIdentifier(ActiveDocument.name)
+
+    folder = Constants.MEMORIAIS_PATH & Id.Formatado
+    
+    If Dir(folder, vbDirectory) <> "" Then
+        Explore folder
+    Else
+        MsgBox "Não há memoriais para o processo especificado"
+    End If
+
+
+finally: On Error Resume Next
+   Helpers.resumeApplication
+   Exit Sub
+
+try: Catch Err
+    Resume finally
+    Resume
+    
+End Sub
+
+
 Sub importUltimoDespacho()
     
 On Error GoTo try
@@ -194,6 +226,10 @@ End Function
 
 Public Function openAcordaosFolderCallback(control As IRibbonControl)
     openAcordaoFolder
+End Function
+
+Public Function openMemorialFolderCallback(control As IRibbonControl)
+    openMemorialFolder
 End Function
 
 Public Function importUltimoDespachoCallback(control As IRibbonControl)
