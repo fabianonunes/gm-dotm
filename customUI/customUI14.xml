@@ -79,6 +79,14 @@
                 		onAction="Reference.openAcordaosFolderCallback"
 						size="large"/>
 
+					<button
+						id="gm_memoriais"
+						keytip="M"
+						label="Memoriais"
+						imageMso="ReviewCompareMenu"
+                		onAction="Reference.openMemorialFolderCallback"
+						size="large"/>
+
 					<separator id="gm_sep2" />
 
 					<button
