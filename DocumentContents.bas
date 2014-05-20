@@ -11,6 +11,7 @@ On Error GoTo try
     Dim table_rng   As Excel.Range
     Dim doc_rng     As Range
     Dim undo        As UndoRecord
+    Dim textToFind  As String
     
     waitApplication
     
@@ -29,12 +30,23 @@ On Error GoTo try
     For Each table_rng In table.DataBodyRange.rows
 
         Set doc_rng = ActiveDocument.Range
+        
+        textToFind = table_rng.Cells(1).Value
 
         With doc_rng.Find
             .ClearFormatting
-            .MatchWholeWord = True
+            
+            If InStr(textToFind, "*") Then
+                .Forward = True
+                .MatchWholeWord = False
+                textToFind = Replace(textToFind, "*", "")
+            Else
+                .MatchWholeWord = True
+                .Forward = False
+            End If
+            
             .MatchCase = False
-            .text = table_rng.Cells(1).Value
+            .text = textToFind
 
             While .Execute
 
