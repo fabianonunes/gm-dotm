@@ -37,15 +37,20 @@ On Error GoTo try
             .ClearFormatting
             
             If InStr(textToFind, "*") Then
-                .Forward = True
+                .MatchPrefix = True
                 .MatchWholeWord = False
                 textToFind = Replace(textToFind, "*", "")
             Else
                 .MatchWholeWord = True
-                .Forward = False
+                .MatchPrefix = False
             End If
             
             .MatchCase = False
+            .Format = False
+            .MatchWholeWord = False
+            .MatchWildcards = False
+            .MatchSoundsLike = False
+            .MatchAllWordForms = False
             .text = textToFind
 
             While .Execute
