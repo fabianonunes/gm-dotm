@@ -47,7 +47,6 @@ On Error GoTo try
             
             .MatchCase = False
             .Format = False
-            .MatchWholeWord = False
             .MatchWildcards = False
             .MatchSoundsLike = False
             .MatchAllWordForms = False

@@ -34,7 +34,6 @@ On Error GoTo try
             While .Execute
                 counter = counter + 1
                 With oRng
-                    .text = text
                     .Font.Italic = True
                 End With
             Wend
